@@ -6,3 +6,4 @@ use App\Http\Controllers\UserController;
 Route::get('/', function () {return view('login');})->name('login.view');
 Route::get('/register', function () {return view('register');})->name('register.view');
 Route::post('/register' , [UserController::class, 'CreateUser'])->name('user.create');
+Route::post('/login', [UserController::class, 'LoginUser'])->name('user.login');

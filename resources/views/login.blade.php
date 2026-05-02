@@ -73,21 +73,42 @@
             .auth-switch a { color:var(--accent); cursor:pointer; font-weight:600; }
             </style>
     </head>
-    <body>
-        <div class="page active" id="page-login">
+<body>
+    <div class="page active" id="page-login">
         <div class="auth-wrap">
             <div class="auth-card">
-            <div class="auth-logo">
-                <div class="auth-logo-mark">
-                <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="5.5" stroke="white" stroke-width="1.6"/><circle cx="7" cy="7" r="2" fill="white"/></svg>
-                </div>LabUs</div>
-            <div class="auth-sub">Research Equipment Management — University Portal</div>
-            <div class="field"><label>username</label><input id="loginName" placeholder="Jane Doe"/></div>
-            <div class="field"><label>Password</label><input type="password" id="loginPw" placeholder="••••••••"/></div>
-            <button class="btn-primary" onclick="doLogin()">Sign In</button>
-            <div class="auth-switch">New here? <a href="{{ route('register.view') }}">Request access</a></div>
+                <!-- Logo Section -->
+                <div class="auth-logo">
+                    <div class="auth-logo-mark">
+                        <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                            <circle cx="7" cy="7" r="5.5" stroke="white" stroke-width="1.6"/>
+                            <circle cx="7" cy="7" r="2" fill="white"/>
+                        </svg>
+                    </div>
+                    LabUs
+                </div>
+                
+                <div class="auth-sub">Research Equipment Management — University Portal</div>
+                <form action="{{ route('user.login') }}" method="POST">
+                    @csrf
+                    <div class="field">
+                        <label for="loginName">Username</label>
+                        <input name="username" id="loginName" placeholder="Jane Doe" required />
+                    </div>
+
+                    <div class="field">
+                        <label for="loginPw">Password</label>
+                        <input name="password" type="password" id="loginPw" placeholder="••••••••" required />
+                    </div>
+
+                    <button class="btn-primary" type="submit">Sign In</button>
+                </form>
+
+                <div class="auth-switch">
+                    New here? <a href="{{ route('register.view') }}">Request access</a>
+                </div>
             </div>
         </div>
-        </div>
-    </body>
+    </div>
+</body>
 </html>

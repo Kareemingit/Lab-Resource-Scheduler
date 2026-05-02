@@ -21,9 +21,7 @@ class UserController extends Controller
             'password' => $request->password,
             'role' => $request->role
         ]);
-
         $userid = $user->id;
-
         if($request->role == 'researcher'){
             Researcher::create([
                 'user_id' => $userid
@@ -44,5 +42,16 @@ class UserController extends Controller
         } else if ($request->role == 'pi'){
             // No additional table for pi role
         }
+    }
+    public function LoginUser(Request $request){
+        $request->validate([
+            'username' => 'required',
+            'password' => 'required'
+        ]);
+        $user = User::where('username', $request->username)->first();
+        if (!$user || $user->password !== $request->password) {
+            dd('Invalid username or password');
+        }
+        dd('Login successful for user: ' . $user->username);
     }
 }
