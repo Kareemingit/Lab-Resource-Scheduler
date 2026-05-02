@@ -7,9 +7,11 @@ use Illuminate\Database\Eloquent\Model;
 class Researcher extends Model
 {
     protected $table = 'researchers';
+    protected $primaryKey = 'user_id';
     public $timestamps = false;
 
     protected $fillable = [
-        'user_id'
+        'user_id',
+        'project_id'
     ];
 }

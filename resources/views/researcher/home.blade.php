@@ -208,7 +208,7 @@
         </div>
         
         <div class="topbar-nav" id="topNav">
-            <a class="nav-btn active" href="{{ route('researcher.home') }}">Home</a>
+            <a class="nav-btn active" href="{{ route('researcher.home', ['id' => $researcher->user_id]) }}">Home</a>
             <a class="nav-btn" href="">Equipment</a>
             <a class="nav-btn" href="">Reservations</a>
             <a class="nav-btn" href="">Profile</a>
@@ -241,12 +241,8 @@
 
                 <div class="grid-4">
                     <div class="stat-card">
-                        <div class="stat-label">Usage</div>
-                        <div class="stat-value">34.5h</div>
-                    </div>
-                    <div class="stat-card">
                         <div class="stat-label">Grant Balance</div>
-                        <div class="stat-value">$42K</div>
+                        <div class="stat-value">${{ $project->balance ?? 0 }}</div>
                     </div>
                     <div class="stat-card">
                         <div class="stat-label">Reservations</div>

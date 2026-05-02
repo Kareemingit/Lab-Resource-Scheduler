@@ -9,7 +9,5 @@ Route::post('/register' , [UserController::class, 'CreateUser'])->name('user.cre
 Route::post('/login', [UserController::class, 'LoginUser'])->name('user.login');
 
 //researcher
-Route::get('/researcher/home', function () {return view('researcher.home');})->name('researcher.home');
-Route::get('/researcher/equipments', function () {return view('researcher.equipments');})->name('researcher.equipment');
-Route::get('/researcher/reservations', function () {return view('researcher.reservations');})->name('researcher.reservation');
 Route::get('/researcher/profile', function () {return view('researcher.profile');})->name('researcher.profile');
+Route::get('/researcher/home/{id}', [UserController::class, 'ResearcherShowHome'])->name('researcher.home');

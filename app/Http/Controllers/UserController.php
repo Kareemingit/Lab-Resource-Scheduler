@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Models\FinancialDepartment;
+use App\Models\Project;
 use App\Models\Researcher;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 //user module
 class UserController extends Controller
 {
@@ -43,6 +45,12 @@ class UserController extends Controller
             // No additional table for pi role
         }
     }
+
+    public function ResearcherShowHome($id){
+        $researcher = Researcher::findOrFail($id);
+        $project = Project::where('project_id', $researcher->project_id)->first();
+        return view('researcher.home', ['researcher' => $researcher, 'project' => $project ?? null]);
+    }
     public function LoginUser(Request $request){
         $request->validate([
             'username' => 'required',
@@ -52,9 +60,11 @@ class UserController extends Controller
         if (!$user || $user->password !== $request->password) {
             dd('Invalid username or password');
         }
+        
         if($user->role == 'researcher'){
-            $researcher = Researcher::findOrFail($user->id);
-            return view('researcher.home' , ['user' => $user , 'researcher' => $researcher]);
+            $researcher = Researcher::findOrFail($user->user_id);
+            $project = Project::where('project_id', $researcher->project_id)->first();
+            return redirect()->route('researcher.home', ['id' => $researcher->user_id , 'project' => $project ?? null]);
         } else if($user->role == 'financial_department'){
             return view('financial_department.home' , ['user' => $user]);
         } else if ($user->role == 'admin'){
