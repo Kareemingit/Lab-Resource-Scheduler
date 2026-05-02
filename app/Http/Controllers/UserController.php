@@ -6,7 +6,7 @@ use App\Models\User;
 use App\Models\FinancialDepartment;
 use App\Models\Researcher;
 use Illuminate\Http\Request;
-
+//user module
 class UserController extends Controller
 {
     public function CreateUser(Request $request){
@@ -52,6 +52,19 @@ class UserController extends Controller
         if (!$user || $user->password !== $request->password) {
             dd('Invalid username or password');
         }
-        dd('Login successful for user: ' . $user->username);
+        if($user->role == 'researcher'){
+            $researcher = Researcher::findOrFail($user->id);
+            return view('researcher.home' , ['user' => $user , 'researcher' => $researcher]);
+        } else if($user->role == 'financial_department'){
+            return view('financial_department.home' , ['user' => $user]);
+        } else if ($user->role == 'admin'){
+            //return redirect()->route('admin.home');
+        } else if ($user->role == 'lab_manager'){
+            //return redirect()->route('lab_manager.home');
+        } else if ($user->role == 'supervisor'){
+            //return redirect()->route('supervisor.home');
+        } else if ($user->role == 'pi'){
+            //return redirect()->route('pi.home');
+        }
     }
 }
