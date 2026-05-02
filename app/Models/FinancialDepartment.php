@@ -4,14 +4,13 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class User extends Model
+class FinancialDepartment extends Model
 {
-    protected $table = 'user_infos';
+    protected $table = 'financial_departments';
     public $timestamps = false;
+
     protected $fillable = [
-        'username',
-        'password',
-        'name',
-        'role'
+        'user_id',
+        'budget'
     ];
 }
