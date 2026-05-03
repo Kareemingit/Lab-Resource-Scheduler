@@ -7,6 +7,7 @@ use App\Models\FinancialDepartment;
 use App\Models\Project;
 use App\Models\Researcher;
 use App\Models\Certification;
+use App\Models\Grant;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -83,6 +84,7 @@ class UserController extends Controller
             'researcherCertifications' => $researcherCertifications
         ])->with('success', 'Certification added successfully.');
     }
+    
     public function ResearcherShowProfile($id){
         $user = User::where('user_id', $id)->first();
         $researcher = Researcher::findOrFail($id);
@@ -100,6 +102,35 @@ class UserController extends Controller
         ]);
     }
 
+    public function FinancialDepartmentShowProjects($id){
+        $financialDepartment = FinancialDepartment::where('user_id', $id)->first();
+        $projects = Project::all();
+        $grants = Grant::all();
+        return view('financial_department.projects', [
+            'user' => $financialDepartment , 
+            'projects' => $projects , 
+            'grants' => $grants
+        ]);
+    }
+
+    public function UpdateBudget(Request $request, $id){
+        $financialDepartment = FinancialDepartment::where('user_id', $id)->first();
+        if ($financialDepartment) {
+            $financialDepartment->budget += $request->amount;
+            $financialDepartment->save();
+            $projects = Project::all();
+            $grants = Grant::where('financial_id', $id)->get();
+            return redirect()->route('financial_department.projects', [
+                'id' => $id,
+                'user' => $financialDepartment, 
+                'projects' => $projects , 
+                'grants' => $grants
+            ])->with('success', 'Budget updated successfully.');
+        } else {
+            return redirect()->route('financial_department.projects', ['id' => $id])->with('error', 'Financial department or grant not found.');
+        }
+    }
+
     public function LoginUser(Request $request){
         $request->validate([
             'username' => 'required',
@@ -115,7 +146,15 @@ class UserController extends Controller
             $project = Project::where('project_id', $researcher->project_id)->first();
             return redirect()->route('researcher.home', ['id' => $researcher->user_id , 'project' => $project ?? null]);
         } else if($user->role == 'financial_department'){
-            return view('financial_department.home' , ['user' => $user]);
+            $projects = Project::all();
+            $grants = Grant::where('financial_id', $user->user_id)->get();
+            $financialDepartment = FinancialDepartment::where('user_id', $user->user_id)->first();
+            return redirect()->route('financial_department.projects' , [
+                'id' => $user->user_id,
+                'user' => $financialDepartment, 
+                'projects' => $projects , 
+                'grants' => $grants
+            ]);
         } else if ($user->role == 'admin'){
             //return redirect()->route('admin.home');
         } else if ($user->role == 'lab_manager'){
