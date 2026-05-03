@@ -276,7 +276,7 @@
             </div>
             <div class="equip-foot">
                 @if($e->status === 'available')
-                    <a href="#reserve-{{ $e->id }}" class="btn btn-sm btn-accent">Reserve</a>
+                    <a href="#reserve-{{ $e->eq_id }}" class="btn btn-sm btn-accent">Reserve</a>
                 @endif
             </div>
         </div>
@@ -291,7 +291,7 @@
 
                 <form action="{{ route('reservations.store') }}" method="POST">
                     @csrf
-                    <input type="hidden" name="equipment_id" value="{{ $e->id }}">
+                    <input type="hidden" name="equipment_id" value="{{ $e->eq_id }}">
                     <input type="hidden" name="user_id" value="{{ $researcher->user_id }}">
 
                     <div class="form-group">
