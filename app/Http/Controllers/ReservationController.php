@@ -21,6 +21,10 @@ class ReservationController extends Controller
         return $reservations->isEmpty();
     }
 
+
+    private function checkUserHasPermission($researcher_id , $eq_id){
+            
+    }
     public function store(Request $request){
         $validatedData = $request->validate([
             'equipment_id' => 'required|exists:equipments,eq_id',
@@ -31,22 +35,18 @@ class ReservationController extends Controller
             'grant_id'     => 'required'
         ]);
 
-        // 1. Create Carbon instances for Start and End times
-        // Format: "2026-05-03 09:00"
+
         $startDateTime = Carbon::parse($validatedData['res_date'] . ' ' . $validatedData['start_time']);
         
-        // 2. Calculate End Date by adding the duration hours
         $duration = (int) $validatedData['duration']; 
         $endDateTime = (clone $startDateTime)->addHours($duration);
 
-        // 3. Perform Availability Check
+        
         if (!$this->checkAvailability($validatedData['equipment_id'], $startDateTime, $endDateTime)) {
             //return redirect()->back()->with('error', 'The equipment is not available for the selected period.');
             dd('The equipment is not available for the selected period.');
         }
 
-        // 4. Save to Database
-        // Note: Ensure your database table has 'start_date' and 'end_date' as datetime columns
         Reservation::create([
             'eq_id'         => $validatedData['equipment_id'],
             'researcher_id' => $validatedData['user_id'],

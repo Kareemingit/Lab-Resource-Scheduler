@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Models\FinancialDepartment;
 use App\Models\Project;
 use App\Models\Researcher;
+use App\Models\Certification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 //user module
@@ -51,7 +52,24 @@ class UserController extends Controller
         $project = Project::where('project_id', $researcher->project_id)->first();
         return view('researcher.home', ['researcher' => $researcher, 'project' => $project ?? null]);
     }
-    
+
+    public function ResearcherShowProfile($id){
+        $user = User::where('user_id', $id)->first();
+        $researcher = Researcher::findOrFail($id);
+        $AllCertifications = Certification::all();
+        $researcherCertifications = DB::table('certification_researcher')
+            ->join('certifications', 'certification_researcher.cert_id', '=', 'certifications.cert_id')
+            ->where('certification_researcher.researcher_id', $id)
+            ->select('certifications.name')
+            ->get();
+        return view('researcher.profile', [
+            'researcher' => $researcher , 
+            'user' => $user, 
+            'certifications' => $AllCertifications,
+            'researcherCertifications' => $researcherCertifications
+            ]);
+    }
+
     public function LoginUser(Request $request){
         $request->validate([
             'username' => 'required',

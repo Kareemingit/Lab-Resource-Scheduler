@@ -11,9 +11,9 @@ Route::post('/register' , [UserController::class, 'CreateUser'])->name('user.cre
 Route::post('/login', [UserController::class, 'LoginUser'])->name('user.login');
 
 //researcher
-Route::get('/researcher/profile', function () {return view('researcher.profile');})->name('researcher.profile');
+Route::get('/researcher/profile/{id}', [UserController::class, 'ResearcherShowProfile'])->name('researcher.profile');
 Route::get('/researcher/home/{id}', [UserController::class, 'ResearcherShowHome'])->name('researcher.home');
+Route::get('/researcher/equipments/{id}', [EquipmentsController::class, 'index'])->name('researcher.equipments');
 
 //components module
 Route::post('/reservations/store', [ReservationController::class, 'store'])->name('reservations.store');
-Route::get('/researcher/equipments/{id}', [EquipmentsController::class, 'index'])->name('researcher.equipments');

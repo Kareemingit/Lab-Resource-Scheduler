@@ -1,10 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>LabUs — Equipment</title>
-  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Researcher Profile</title>
     <style>
         :root {
         --bg: #f4f5f7;
@@ -195,21 +194,7 @@
         .form-row { grid-template-columns:1fr; }
         .main { padding:16px; }
         }
-        .overlay {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.6);
-            backdrop-filter: blur(2px);
-            z-index: 1000;
-            align-items: center;
-            justify-content: center;
-        }
 
-        /* Show overlay when its ID is in the URL (e.g., #reserve-1) */
-        .overlay:target {
-            display: flex;
-        }
     </style>
 </head>
 <body>
@@ -223,9 +208,9 @@
         
         <div class="topbar-nav" id="topNav">
             <a class="nav-btn" href="{{ route('researcher.home', ['id' => $researcher->user_id]) }}">Home</a>
-            <a class="nav-btn active" href="{{ route('researcher.equipments', ['id' => $researcher->user_id]) }}">Equipment</a>
+            <a class="nav-btn" href="{{ route('researcher.equipments', ['id' => $researcher->user_id]) }}">Equipment</a>
             <a class="nav-btn" href="">Reservations</a>
-            <a class="nav-btn" href="{{ route('researcher.profile', ['id' => $researcher->user_id]) }}">Profile</a>
+            <a class="nav-btn active" href="{{ route('researcher.profile', ['id' => $researcher->user_id]) }}">Profile</a>
         </div>
 
         <div class="topbar-right">
@@ -235,202 +220,66 @@
             </div>
         </div>
     </div>
-<div class="main" style="max-width:100%">
-    <div class="page-header">
-        <h1>Research Equipment</h1>
-        <p>Browse, reserve, and manage lab equipment</p>
+    <div class="main" style="max-width:100%">
+        <div class="page-header">
+            <h1>Profile</h1>
+            <p>Manage your account details</p>
+        </div>
+
+        <!-- Profile Hero -->
+        <div class="profile-hero">
+            <div class="profile-av"> {{ substr($user->name, 0, 1) }}</div>
+            <div style="flex:1">
+                <div class="profile-name">{{ $user->name }}</div>
+                <div class="profile-meta">{{ ucfirst($user->role) }}</div>
+            </div>
+        </div>
+
+        <!-- Personal Information Card -->
+        <div class="card">
+            <div class="card-title">Personal Information</div>
+            <form action="" method="POST">
+                @csrf
+                @method('PUT')
+                <div class="form-group">
+                    <label>Full Name</label>
+                    <input name="name" value="{{ $user->name }}">
+                </div>
+                <div class="form-group">
+                    <label>Username</label>
+                    <input name="username" value="{{ $user->username }}">
+                </div>
+                <button type="submit" class="btn btn-accent btn-sm">Save Changes</button>
+            </form>
+        </div>
+
+        <!-- Certifications (Conditional) -->
+        @if($user->role === 'researcher' || true)
+        <div class="card">
+            <div class="card-title">Certifications</div>
+            <form action="" method="POST">
+                @csrf
+                <div class="form-group">
+                    <label>Add New Certification</label>
+                    <select name="certification">
+                        @foreach($certifications as $cert)
+                            <option value="{{ $cert->name }}">{{ $cert->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-accent btn-sm">Add Certification</button>
+            </form>
+
+            <div id="userCertsList" style="margin-top:12px">
+                @foreach($researcherCertifications ?? [] as $cert)
+                    <div class="cert-item" style="display:flex;align-items:center;gap:8px;padding:8px;background:rgba(0,255,0,0.1);border-radius:8px;margin-bottom:6px">
+                        <span style="color:green">✓</span>
+                        <span>{{ $cert }}</span>
+                    </div>
+                @endforeach
+            </div>
+        </div>
+        @endif
     </div>
-
-    <!-- Filter & Search Form -->
-    <form action="{{ route('researcher.equipments', ['id' => $researcher->user_id]) }}" method="GET" class="search-row">
-        <div class="search-input-wrap">
-            <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="6.5" cy="6.5" r="5" stroke="currentColor" stroke-width="1.5"/><path d="M10.5 10.5L14 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
-            <input name="q" value="{{ request('q') }}" placeholder="Search equipment…"/>
-        </div>
-        
-        <!-- Status Filter Links -->
-        <a href="" class="filter-btn">All</a>
-        <a href="" class="filter-btn">Available</a>
-        <a href="" class="filter-btn">In Use</a>
-        
-        <button type="submit" style="display:none;">Search</button>
-    </form>
-
-<div class="grid-3" id="equipGrid">
-    @forelse($equipments as $e)
-        <div class="equip-card">
-            <div class="equip-card-head">
-                <div>
-                    <div class="equip-card-icon">{{ $e->icon }}</div>
-                    <div class="equip-name">{{ $e->name }}</div>
-                    <div class="equip-id">{{ $e->eq_id }}</div>
-                </div>
-                @php
-                    $sClass = $e->status === 'available' ? 'bg' : ($e->status === 'in-use' ? 'bb' : 'br');
-                @endphp
-                <span class="badge {{ $sClass }}"><span class="badge-dot"></span>{{ ucfirst($e->status) }}</span>
-            </div>
-            <div class="equip-body">
-                <div class="equip-row"><span class="k">Category</span><span class="v">{{ $e->category }}</span></div>
-                <div class="equip-row"><span class="k">Rate</span><span class="v">${{ $e->price }}/session</span></div>
-            </div>
-            <div class="equip-foot">
-                @if($e->status === 'available')
-                    <a href="#reserve-{{ $e->eq_id }}" class="btn btn-sm btn-accent">Reserve</a>
-                @endif
-            </div>
-        </div>
-
-        <!-- MODAL -->
-        <div class="overlay" id="reserve-{{ $e->eq_id }}">
-            <div class="modal">
-                <div class="modal-head">
-                    <div class="modal-title">New Reservation: {{ $e->name }}</div>
-                    <a href="#" class="modal-close" style="text-decoration:none">×</a>
-                </div>
-
-                <form action="{{ route('reservations.store') }}" method="POST">
-                    @csrf
-                    <input type="hidden" name="equipment_id" value="{{ $e->eq_id }}">
-                    <input type="hidden" name="user_id" value="{{ $researcher->user_id }}">
-
-                    <div class="form-group">
-                        <label>Selected Equipment</label>
-                        <input type="text" value="{{ $e->name }}" readonly style="background:var(--bg)">
-                    </div>
-
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Date</label>
-                            <input type="date" name="res_date" required value="{{ date('Y-m-d') }}">
-                        </div>
-                        <div class="form-group">
-                            <label>Grant</label>
-                            <select name="grant_id">
-                                @foreach($grants as $grant)
-                                    <option value="{{ $grant->grant_id }}">{{ $grant->grant_id }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Start Time</label>
-                            <select name="start_time">
-                                <option>09:00</option>
-                                <option>10:00</option>
-                                <option>11:00</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label>Duration</label>
-                            <input type="number" name="duration" min="1" max="48" value="1" required style="background:var(--bg)">
-                        </div>
-                    </div>
-
-                    <div class="btn-group" style="justify-content:flex-end; margin-top:16px">
-                        <a href="#" class="btn btn-ghost">Cancel</a>
-                        <button type="submit" class="btn btn-accent">Submit Reservation</button>
-                    </div>
-                </form>
-            </div>
-        </div> 
-        <!-- END MODAL (overlay closed) -->
-    @empty
-        <div style="text-align:center;padding:40px;color:var(--text3);grid-column: span 3;">No equipment found.</div>
-    @endforelse
-</div>
-
-
-<!-- <script>
-// EQUIPMENT MANAGEMENT
-let equipFilter = 'all';
-
-function renderEquipment() {
-  let q = document.getElementById('equipSearch')?.value.toLowerCase() || '';
-  let filtered = equipment.filter(e => (equipFilter === 'all' || e.status === equipFilter) && (!q || e.name.toLowerCase().includes(q)));
-  let grid = document.getElementById('equipGrid');
-  if (!grid) return;
-  if (filtered.length === 0) {
-    document.getElementById('equipEmpty').style.display = '';
-    grid.innerHTML = '';
-    return;
-  }
-  document.getElementById('equipEmpty').style.display = 'none';
-  grid.innerHTML = filtered.map(e => {
-    let sClass = e.status === 'available' ? 'bg' : e.status === 'in-use' ? 'bb' : 'br';
-    let sLabel = e.status === 'available' ? 'Available' : e.status === 'in-use' ? 'In Use' : 'Maintenance';
-    let foot = '';
-    let supervisorBadge = e.supervisor ? '<span class="badge by" style="margin-top:8px"><span class="badge-dot"></span>Supervisor Required</span>' : '';
-    if (e.status === 'available' && currentRole === 'researcher') {
-      foot += `<button class="btn btn-sm btn-accent" onclick="openNewResForEquip('${e.name}')">Reserve</button>`;
-    }
-    return `<div class="equip-card">
-      <div class="equip-card-head">
-        <div>
-          <div class="equip-card-icon">${e.icon}</div>
-          <div class="equip-name">${e.name}</div>
-          <div class="equip-id">${e.id}</div>
-        </div>
-        <span class="badge ${sClass}"><span class="badge-dot"></span>${sLabel}</span>
-      </div>
-      <div class="equip-body">
-        <div class="equip-row"><span class="k">Category</span><span class="v">${e.cat}</span></div>
-        <div class="equip-row"><span class="k">Rate ($/hour)</span><span class="v">${e.rate}</span></div>
-        ${supervisorBadge ? `<div style="margin-top:8px">${supervisorBadge}</div>` : ''}
-      </div>
-      <div class="equip-foot">${foot}</div>
-    </div>`;
-  }).join('');
-  document.getElementById('labAddBtn').style.display = currentRole === 'lab' ? '' : 'none';
-}
-
-function filterEquipment() {
-  renderEquipment();
-}
-
-function filterEquipByStatus(btn, val) {
-  equipFilter = val;
-  document.querySelectorAll('#page-equipment .filter-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  renderEquipment();
-}
-
-function openNewResForEquip(name) {
-  let sel = document.getElementById('newResEquipSelect');
-  sel.innerHTML = `<option>${name}</option>`;
-  openModal('newResModal');
-}
-
-function submitNewReservation() {
-  let equip = document.getElementById('newResEquipSelect').value;
-  let grant = document.getElementById('newResGrantSelect').value;
-  let date = document.getElementById('newResDate').value || new Date().toLocaleDateString();
-  let startTime = document.getElementById('newResStart').value;
-  let newRes = {
-    id: 'R' + Date.now(),
-    equip,
-    researcher: currentUser.name,
-    date,
-    time: startTime,
-    grant,
-    cost: '$300',
-    status: 'pending',
-    statusClass: 'by',
-    statusStr: 'pending'
-  };
-  reservations.push(newRes);
-  toast('Reservation submitted', 'info');
-  closeModal('newResModal');
-  renderReservations();
-  renderHome();
-}
-
-function openNewResModal() {
-  openModal('newResModal');
-}
-</script> -->
-
 </body>
 </html>
