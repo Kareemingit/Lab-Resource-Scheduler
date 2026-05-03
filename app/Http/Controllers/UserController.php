@@ -51,6 +51,7 @@ class UserController extends Controller
         $project = Project::where('project_id', $researcher->project_id)->first();
         return view('researcher.home', ['researcher' => $researcher, 'project' => $project ?? null]);
     }
+    
     public function LoginUser(Request $request){
         $request->validate([
             'username' => 'required',

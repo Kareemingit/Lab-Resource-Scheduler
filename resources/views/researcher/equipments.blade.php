@@ -199,49 +199,78 @@
     </style>
 </head>
 <body>
-<div class="page active" id="page-equipment">
-  <div style="display:flex;flex:1">
-    <div class="main" style="max-width:100%">
-      <div class="page-header">
+    <div class="topbar" id="topbar">
+        <div class="logo">
+            <div class="logo-mark">
+                <svg viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="5.5" stroke="white" stroke-width="1.6"/><circle cx="7" cy="7" r="2" fill="white"/></svg>
+            </div>
+            LabUs
+        </div>
+        
+        <div class="topbar-nav" id="topNav">
+            <a class="nav-btn" href="{{ route('researcher.home', ['id' => $researcher->user_id]) }}">Home</a>
+            <a class="nav-btn active" href="{{ route('researcher.equipments', ['id' => $researcher->user_id]) }}">Equipment</a>
+            <a class="nav-btn" href="">Reservations</a>
+            <a class="nav-btn" href="">Profile</a>
+        </div>
+
+        <div class="topbar-right">
+            <div class="role-pill r-researcher">RESEARCHER</div>
+            <div class="avatar">
+                US
+            </div>
+        </div>
+    </div>
+<div class="main" style="max-width:100%">
+    <div class="page-header">
         <h1>Research Equipment</h1>
         <p>Browse, reserve, and manage lab equipment</p>
-      </div>
-      <div class="search-row">
+    </div>
+
+    <!-- Filter & Search Form -->
+    <form action="{{ route('researcher.equipments', ['id' => $researcher->user_id]) }}" method="GET" class="search-row">
         <div class="search-input-wrap">
-          <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="6.5" cy="6.5" r="5" stroke="currentColor" stroke-width="1.5"/><path d="M10.5 10.5L14 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
-          <input id="equipSearch" placeholder="Search equipment…" oninput="filterEquipment()"/>
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="6.5" cy="6.5" r="5" stroke="currentColor" stroke-width="1.5"/><path d="M10.5 10.5L14 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+            <input name="q" value="{{ request('q') }}" placeholder="Search equipment…"/>
         </div>
-        <button class="filter-btn active" onclick="filterEquipByStatus(this,'all')">All</button>
-        <button class="filter-btn" onclick="filterEquipByStatus(this,'available')">Available</button>
-        <button class="filter-btn" onclick="filterEquipByStatus(this,'in-use')">In Use</button>
-        <button class="filter-btn" onclick="filterEquipByStatus(this,'maintenance')">Maintenance</button>
-        <div id="labAddBtn" style="display:none;margin-left:auto"><button class="btn btn-accent btn-sm" onclick="openAddEquipModal()">+ Add Equipment</button></div>
-      </div>
-      <div class="grid-3" id="equipGrid"></div>
-      <div id="equipEmpty" style="display:none;text-align:center;padding:40px;color:var(--text3)">No equipment found.</div>
+        
+        <!-- Status Filter Links -->
+        <a href="" class="filter-btn">All</a>
+        <a href="" class="filter-btn">Available</a>
+        <a href="" class="filter-btn">In Use</a>
+        
+        <button type="submit" style="display:none;">Search</button>
+    </form>
+
+    <div class="grid-3" id="equipGrid">
+        @forelse($equipments as $e)
+            <div class="equip-card">
+                <div class="equip-card-head">
+                    <div>
+                        <div class="equip-card-icon">{{ $e->icon }}</div>
+                        <div class="equip-name">{{ $e->name }}</div>
+                        <div class="equip-id">{{ $e->id }}</div>
+                    </div>
+                    @php
+                        $sClass = $e->status === 'available' ? 'bg' : ($e->status === 'in-use' ? 'bb' : 'br');
+                    @endphp
+                    <span class="badge {{ $sClass }}"><span class="badge-dot"></span>{{ ucfirst($e->status) }}</span>
+                </div>
+                <div class="equip-body">
+                    <div class="equip-row"><span class="k">Category</span><span class="v">{{ $e->category }}</span></div>
+                    <div class="equip-row"><span class="k">Rate</span><span class="v">${{ $e->price }}/session</span></div>
+                </div>
+                <div class="equip-foot">
+                    <a href="{{ route('reservations.create', ['equipment_id' => $e->id]) }}" class="btn btn-sm btn-accent">Reserve</a>
+                </div>
+            </div>
+        @empty
+            <div style="text-align:center;padding:40px;color:var(--text3);grid-column: span 3;">No equipment found.</div>
+        @endforelse
     </div>
-  </div>
-</div>
-<div class="overlay" id="newResModal">
-  <div class="modal">
-    <div class="modal-head"><div class="modal-title">New Reservation</div><button class="modal-close" onclick="closeModal('newResModal')">×</button></div>
-    <div class="form-group"><label>Equipment</label><select id="newResEquipSelect"></select></div>
-    <div class="form-row">
-      <div class="form-group"><label>Date</label><input type="date" id="newResDate"/></div>
-      <div class="form-group"><label>Grant</label><select id="newResGrantSelect"><option>NSF-2024-089</option><option>NIH-2023-445</option><option>DOE-2024-001</option></select></div>
-    </div>
-    <div class="form-row">
-      <div class="form-group"><label>Available Hours</label><select id="newResStart"><option>09:00 - 10:00</option><option>10:00 - 11:00</option><option>11:00 - 12:00</option><option>14:00 - 15:00</option><option>15:00 - 16:00</option><option>16:00 - 17:00</option></select></div>
-      <div class="form-group"><label>Duration (hours)</label><select id="newResDuration"><option>1 hour</option><option>2 hours</option><option>3 hours</option></select></div>
-    </div>
-    <div class="btn-group" style="justify-content:flex-end;margin-top:6px">
-      <button class="btn btn-ghost" onclick="closeModal('newResModal')">Cancel</button>
-      <button class="btn btn-accent" onclick="submitNewReservation()">Submit Reservation</button>
-    </div>
-  </div>
 </div>
 
-<script>
+<!-- <script>
 // EQUIPMENT MANAGEMENT
 let equipFilter = 'all';
 
@@ -328,7 +357,7 @@ function submitNewReservation() {
 function openNewResModal() {
   openModal('newResModal');
 }
-</script>
+</script> -->
 
 </body>
 </html>
