@@ -8,6 +8,7 @@ use App\Models\Project;
 use App\Models\Researcher;
 use App\Models\Certification;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 //user module
 class UserController extends Controller
@@ -53,6 +54,35 @@ class UserController extends Controller
         return view('researcher.home', ['researcher' => $researcher, 'project' => $project ?? null]);
     }
 
+    public function AddCertification(Request $request){
+        $validatedData = $request->validate([
+            'certification' => 'required|exists:certifications,cert_id',
+            'user_id' => 'required|exists:user_infos,user_id'
+        ]);
+        $researcher_id = $validatedData['user_id'];
+        $cert_id = $validatedData['certification'];
+        DB::table('certification_researcher')->insert([
+            'researcher_id' => $researcher_id,
+            'cert_id' => $cert_id,
+            'expiry_date' => Carbon::now()->addYears(1)
+        ]);
+        $user = User::where('user_id', $researcher_id)->first();
+        $researcher = Researcher::findOrFail($researcher_id);
+        $AllCertifications = Certification::all();
+        $researcherCertifications = DB::table('certification_researcher')
+            ->join('certifications', 'certification_researcher.cert_id', '=', 'certifications.cert_id')
+            ->where('certification_researcher.researcher_id', $researcher_id)
+            ->select('certifications.name')
+            ->get();
+        return redirect()->route('researcher.profile', 
+        [
+            'id' => $researcher_id,
+            'researcher' => $researcher , 
+            'user' => $user, 
+            'certifications' => $AllCertifications,
+            'researcherCertifications' => $researcherCertifications
+        ])->with('success', 'Certification added successfully.');
+    }
     public function ResearcherShowProfile($id){
         $user = User::where('user_id', $id)->first();
         $researcher = Researcher::findOrFail($id);
@@ -67,7 +97,7 @@ class UserController extends Controller
             'user' => $user, 
             'certifications' => $AllCertifications,
             'researcherCertifications' => $researcherCertifications
-            ]);
+        ]);
     }
 
     public function LoginUser(Request $request){

@@ -14,6 +14,6 @@ Route::post('/login', [UserController::class, 'LoginUser'])->name('user.login');
 Route::get('/researcher/profile/{id}', [UserController::class, 'ResearcherShowProfile'])->name('researcher.profile');
 Route::get('/researcher/home/{id}', [UserController::class, 'ResearcherShowHome'])->name('researcher.home');
 Route::get('/researcher/equipments/{id}', [EquipmentsController::class, 'index'])->name('researcher.equipments');
-
+Route::post('/researcher/add-certification', [UserController::class, 'AddCertification'])->name('researcher.add_certification');
 //components module
 Route::post('/reservations/store', [ReservationController::class, 'store'])->name('reservations.store');

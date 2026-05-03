@@ -205,7 +205,7 @@
             </div>
             LabUs
         </div>
-        
+
         <div class="topbar-nav" id="topNav">
             <a class="nav-btn" href="{{ route('researcher.home', ['id' => $researcher->user_id]) }}">Home</a>
             <a class="nav-btn" href="{{ route('researcher.equipments', ['id' => $researcher->user_id]) }}">Equipment</a>
@@ -253,19 +253,18 @@
             </form>
         </div>
 
-        <!-- Certifications (Conditional) -->
-        @if($user->role === 'researcher' || true)
         <div class="card">
             <div class="card-title">Certifications</div>
-            <form action="" method="POST">
+            <form action="{{ route('researcher.add_certification') }}" method="POST">
                 @csrf
                 <div class="form-group">
                     <label>Add New Certification</label>
                     <select name="certification">
                         @foreach($certifications as $cert)
-                            <option value="{{ $cert->name }}">{{ $cert->name }}</option>
+                            <option value="{{ $cert->cert_id }}">{{ $cert->name }}</option>
                         @endforeach
                     </select>
+                    <input type="hidden" name="user_id" value="{{ $user->user_id }}">
                 </div>
                 <button type="submit" class="btn btn-accent btn-sm">Add Certification</button>
             </form>
@@ -274,12 +273,11 @@
                 @foreach($researcherCertifications ?? [] as $cert)
                     <div class="cert-item" style="display:flex;align-items:center;gap:8px;padding:8px;background:rgba(0,255,0,0.1);border-radius:8px;margin-bottom:6px">
                         <span style="color:green">✓</span>
-                        <span>{{ $cert }}</span>
+                        <span>{{ $cert->name }}</span>
                     </div>
                 @endforeach
             </div>
         </div>
-        @endif
     </div>
 </body>
 </html>
