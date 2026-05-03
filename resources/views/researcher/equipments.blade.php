@@ -195,7 +195,21 @@
         .form-row { grid-template-columns:1fr; }
         .main { padding:16px; }
         }
+        .overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(2px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
 
+        /* Show overlay when its ID is in the URL (e.g., #reserve-1) */
+        .overlay:target {
+            display: flex;
+        }
     </style>
 </head>
 <body>
@@ -242,33 +256,92 @@
         <button type="submit" style="display:none;">Search</button>
     </form>
 
-    <div class="grid-3" id="equipGrid">
-        @forelse($equipments as $e)
-            <div class="equip-card">
-                <div class="equip-card-head">
-                    <div>
-                        <div class="equip-card-icon">{{ $e->icon }}</div>
-                        <div class="equip-name">{{ $e->name }}</div>
-                        <div class="equip-id">{{ $e->id }}</div>
-                    </div>
-                    @php
-                        $sClass = $e->status === 'available' ? 'bg' : ($e->status === 'in-use' ? 'bb' : 'br');
-                    @endphp
-                    <span class="badge {{ $sClass }}"><span class="badge-dot"></span>{{ ucfirst($e->status) }}</span>
+<div class="grid-3" id="equipGrid">
+    @forelse($equipments as $e)
+        <div class="equip-card">
+            <div class="equip-card-head">
+                <div>
+                    <div class="equip-card-icon">{{ $e->icon }}</div>
+                    <div class="equip-name">{{ $e->name }}</div>
+                    <div class="equip-id">{{ $e->eq_id }}</div>
                 </div>
-                <div class="equip-body">
-                    <div class="equip-row"><span class="k">Category</span><span class="v">{{ $e->category }}</span></div>
-                    <div class="equip-row"><span class="k">Rate</span><span class="v">${{ $e->price }}/session</span></div>
-                </div>
-                <div class="equip-foot">
-                    <a href="{{ route('reservations.create', ['equipment_id' => $e->id]) }}" class="btn btn-sm btn-accent">Reserve</a>
-                </div>
+                @php
+                    $sClass = $e->status === 'available' ? 'bg' : ($e->status === 'in-use' ? 'bb' : 'br');
+                @endphp
+                <span class="badge {{ $sClass }}"><span class="badge-dot"></span>{{ ucfirst($e->status) }}</span>
             </div>
-        @empty
-            <div style="text-align:center;padding:40px;color:var(--text3);grid-column: span 3;">No equipment found.</div>
-        @endforelse
-    </div>
+            <div class="equip-body">
+                <div class="equip-row"><span class="k">Category</span><span class="v">{{ $e->category }}</span></div>
+                <div class="equip-row"><span class="k">Rate</span><span class="v">${{ $e->price }}/session</span></div>
+            </div>
+            <div class="equip-foot">
+                @if($e->status === 'available')
+                    <a href="#reserve-{{ $e->id }}" class="btn btn-sm btn-accent">Reserve</a>
+                @endif
+            </div>
+        </div>
+
+        <!-- MODAL -->
+        <div class="overlay" id="reserve-{{ $e->eq_id }}">
+            <div class="modal">
+                <div class="modal-head">
+                    <div class="modal-title">New Reservation: {{ $e->name }}</div>
+                    <a href="#" class="modal-close" style="text-decoration:none">×</a>
+                </div>
+
+                <form action="{{ route('reservations.store') }}" method="POST">
+                    @csrf
+                    <input type="hidden" name="equipment_id" value="{{ $e->id }}">
+                    <input type="hidden" name="user_id" value="{{ $researcher->user_id }}">
+
+                    <div class="form-group">
+                        <label>Selected Equipment</label>
+                        <input type="text" value="{{ $e->name }}" readonly style="background:var(--bg)">
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Date</label>
+                            <input type="date" name="res_date" required value="{{ date('Y-m-d') }}">
+                        </div>
+                        <div class="form-group">
+                            <label>Grant</label>
+                            <select name="grant_id">
+                                @foreach($grants as $grant)
+                                    <option value="{{ $grant->grant_id }}">{{ $grant->grant_id }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Start Time</label>
+                            <select name="start_time">
+                                <option>09:00</option>
+                                <option>10:00</option>
+                                <option>11:00</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Duration</label>
+                            <input type="number" name="duration" min="1" max="48" value="1" required style="background:var(--bg)">
+                        </div>
+                    </div>
+
+                    <div class="btn-group" style="justify-content:flex-end; margin-top:16px">
+                        <a href="#" class="btn btn-ghost">Cancel</a>
+                        <button type="submit" class="btn btn-accent">Submit Reservation</button>
+                    </div>
+                </form>
+            </div>
+        </div> 
+        <!-- END MODAL (overlay closed) -->
+    @empty
+        <div style="text-align:center;padding:40px;color:var(--text3);grid-column: span 3;">No equipment found.</div>
+    @endforelse
 </div>
+
 
 <!-- <script>
 // EQUIPMENT MANAGEMENT
