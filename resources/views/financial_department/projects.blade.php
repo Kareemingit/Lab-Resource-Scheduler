@@ -315,8 +315,9 @@
                 <div class="modal-title">Assign Grant to Project</div>
                 <a href="#" class="modal-close">×</a>
             </div>
-            <form action="" method="POST">
+            <form action="{{ route('grant.store') }}" method="POST">
                 @csrf
+                <input name="user_id" type="text" hidden value="{{ $user->user_id }}">
                 <div class="form-group">
                     <label>Project</label>
                     <select name="project_id">
@@ -326,12 +327,8 @@
                     </select>
                 </div>
                 <div class="form-group">
-                    <label>Grant</label>
-                    <select name="grant_id">
-                        @foreach($grants ?? [] as $g)
-                            <option value="{{ $g->grant_id }}">{{ $g->grant_id }}</option>
-                        @endforeach
-                    </select>
+                    <label>End Date</label>
+                    <input type="date" id="end_date" name="end_date">
                 </div>
                 <div class="form-group">
                     <label>percentage</label>

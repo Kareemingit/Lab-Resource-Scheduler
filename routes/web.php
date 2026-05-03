@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ReservationController;
 use App\Http\Controllers\EquipmentsController;
+use App\Http\Controllers\GrantController;
 //user module
 Route::get('/', function () {return view('login');})->name('login.view');
 Route::get('/register', function () {return view('register');})->name('register.view');
@@ -17,5 +18,9 @@ Route::get('/researcher/equipments/{id}', [EquipmentsController::class, 'index']
 //financial_department
 Route::get('/financial_department/{id}', [UserController::class, 'FinancialDepartmentShowProjects'])->name('financial_department.projects');
 Route::put('/financial_department/{id}/update-budget', [UserController::class, 'UpdateBudget'])->name('financial_department.update_budget');
-//reservation module
+
+//resource control module
+//reservation
 Route::post('/reservations/store', [ReservationController::class, 'store'])->name('reservations.store');
+//grant
+Route::post('/grant/store' , [GrantController::class , 'store'])->name('grant.store');
