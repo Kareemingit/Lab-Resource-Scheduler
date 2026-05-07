@@ -92,12 +92,6 @@ class EquipmentsController extends Controller
         return redirect()->back()->with('success', 'Equipment removed successfully!');
     }
 
-    // Get lab manager ID for view context
-    private function getLabManagerId()
-    {
-        return auth()->id();
-    }
-
     // Report Accident/Incident
     public function reportAccident(Request $request, $eq_id){
         $equipment = Equipment::findOrFail($eq_id);
@@ -113,7 +107,7 @@ class EquipmentsController extends Controller
             'researcher_id' => $validated['researcher_id'],
             'description' => $validated['description'],
             'date' => now()->toDateString(),
-            'lab_man_id' => auth()->id() // Get current authenticated lab manager
+            'lab_man_id' => $request->lab_manager_id // Get current authenticated lab manager
         ]);
 
         return redirect()->back()->with('success', 'Report submitted successfully!');

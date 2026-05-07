@@ -387,6 +387,7 @@ body {
       </div>
       <form method="POST" action="{{ route('equipment.report', $equipment->eq_id) }}">
         @csrf
+        <input type="hidden" name="lab_manager_id" value="{{ $lab_manager_id }}"/>
         <div class="form-group"><label>Equipment</label><input value="{{ $equipment->name }}" readonly/></div>
         <div class="form-group"><label>Researcher ID Involved</label><input name="researcher_id" type="text" placeholder="Enter researcher ID" required/></div>
         <div class="form-group"><label>Description</label><textarea name="description" rows="4" placeholder="Describe the issue…" required></textarea></div>

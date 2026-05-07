@@ -209,7 +209,7 @@
         <div class="topbar-nav" id="topNav">
             <a class="nav-btn" href="{{ route('researcher.home', ['id' => $researcher->user_id]) }}">Home</a>
             <a class="nav-btn" href="{{ route('researcher.equipments', ['id' => $researcher->user_id]) }}">Equipment</a>
-            <a class="nav-btn active" href="{{ route('researcher.reservation', ['id' => $researcher->user_id]) }}">Reservations</a>
+            <a class="nav-btn" href="{{ route('researcher.reservation', ['id' => $researcher->user_id]) }}">Reservations</a>
             <a class="nav-btn active" href="{{ route('researcher.profile', ['id' => $researcher->user_id]) }}">Profile</a>
         </div>
 
