@@ -162,7 +162,7 @@ class UserController extends Controller
                 'grants' => $grants
             ]);
         } else if ($user->role == 'admin'){
-            //return redirect()->route('admin.home');
+            return redirect()->route('admin.analytics' , ['id' => $user->user_id , 'user' => $user]);
         } else if ($user->role == 'lab_manager'){
             return redirect()->route('lab_manager.equipments', ['id' => $user->user_id]);
         } else if ($user->role == 'supervisor'){
@@ -219,5 +219,37 @@ class UserController extends Controller
 
         return redirect()->route('lab_manager.profile', ['id' => $id])
             ->with('success', 'Password updated successfully.');
+    }
+    //admin
+    public function AdminShowAnalytics($id){
+        $user = User::findOrFail($id);
+        return view('admin.analytics' , ['user' => $user]);
+    }
+
+    public function AdminShowUsers(Request $request ,$id){
+        $user = User::findOrFail($id);
+        $query = User::query();
+
+        if ($request->has('search')) {
+            $search = $request->input('search');
+            $query->where('name', 'LIKE', "%{$search}%")
+                ->orWhere('username', 'LIKE', "%{$search}%")
+                ->orWhere('role', 'LIKE', "%{$search}%");
+        }
+
+        $users = $query->get();
+        $researchers = User::where('role', 'researcher')->get();
+
+        return view('admin.users', [
+            'user' => $user,
+            'users' => $users,
+            'researchers' => $researchers,
+            'id' => $id
+        ]);
+    }
+
+    public function AdminShowProfile($id){
+        $user = User::where('user_id', $id)->first();
+        return view('admin.profile' , ['user' => $user]);
     }
 }
