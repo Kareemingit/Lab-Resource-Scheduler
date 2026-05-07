@@ -10,7 +10,8 @@ class Certification extends Model
     public $timestamps = false;
 
     protected $fillable = [
+        'cert_id',
         'name',
-        'eq_id'
+        'eq_id',
     ];
 }

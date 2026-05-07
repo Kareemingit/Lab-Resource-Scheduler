@@ -15,6 +15,15 @@ Route::post('/researcher/add-certification', [UserController::class, 'AddCertifi
 Route::get('/researcher/profile/{id}', [UserController::class, 'ResearcherShowProfile'])->name('researcher.profile');
 Route::get('/researcher/home/{id}', [UserController::class, 'ResearcherShowHome'])->name('researcher.home');
 Route::get('/researcher/equipments/{id}', [EquipmentsController::class, 'index'])->name('researcher.equipments');
+//lab_manager
+Route::get('/lab_manager/equipments/{id}', [EquipmentsController::class, 'index_lab_manager'])->name('lab_manager.equipments');
+Route::get('/lab_manager/profile/{id}', [UserController::class, 'LabManagerShowProfile'])->name('lab_manager.profile');
+Route::put('/lab_manager/profile/{id}', [UserController::class, 'UpdateLabManagerProfile'])->name('lab_manager.update_profile');
+Route::put('/lab_manager/profile/{id}/password', [UserController::class, 'UpdateLabManagerPassword'])->name('lab_manager.update_password');
+Route::post('/lab_manager/equipment/{id}/store', [EquipmentsController::class, 'store'])->name('equipment.store');
+Route::put('/lab_manager/equipment/{id}/update', [EquipmentsController::class, 'update'])->name('equipment.update');
+Route::delete('/lab_manager/equipment/{id}/delete', [EquipmentsController::class, 'destroy'])->name('equipment.destroy');
+Route::post('/lab_manager/equipment/{eq_id}/report-accident', [EquipmentsController::class, 'reportAccident'])->name('equipment.report');
 //financial_department
 Route::get('/financial_department/{id}', [UserController::class, 'FinancialDepartmentShowProjects'])->name('financial_department.projects');
 Route::put('/financial_department/{id}/update-budget', [UserController::class, 'UpdateBudget'])->name('financial_department.update_budget');

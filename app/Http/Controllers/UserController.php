@@ -158,11 +158,54 @@ class UserController extends Controller
         } else if ($user->role == 'admin'){
             //return redirect()->route('admin.home');
         } else if ($user->role == 'lab_manager'){
-            //return redirect()->route('lab_manager.home');
+            return redirect()->route('lab_manager.equipments', ['id' => $user->user_id]);
         } else if ($user->role == 'supervisor'){
             //return redirect()->route('supervisor.home');
         } else if ($user->role == 'pi'){
             //return redirect()->route('pi.home');
         }
+    }
+
+    // Lab Manager Profile Methods
+    public function LabManagerShowProfile($id){
+        $user = User::findOrFail($id);
+        return view('lab_manager.profile', ['user' => $user]);
+    }
+
+    public function UpdateLabManagerProfile(Request $request, $id){
+        $user = User::findOrFail($id);
+        
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'username' => 'required|string|max:255|unique:user_infos,username,' . $id . ',user_id'
+        ]);
+
+        $user->update([
+            'name' => $validated['name'],
+            'username' => $validated['username']
+        ]);
+
+        return redirect()->route('lab_manager.profile', ['id' => $id])
+            ->with('success', 'Profile updated successfully.');
+    }
+
+    public function UpdateLabManagerPassword(Request $request, $id){
+        $user = User::findOrFail($id);
+        
+        $validated = $request->validate([
+            'current_password' => 'required',
+            'new_password' => 'required|min:12|confirmed'
+        ]);
+
+        if ($user->password !== $validated['current_password']) {
+            return redirect()->back()->with('error', 'Current password is incorrect.');
+        }
+
+        $user->update([
+            'password' => $validated['new_password']
+        ]);
+
+        return redirect()->route('lab_manager.profile', ['id' => $id])
+            ->with('success', 'Password updated successfully.');
     }
 }

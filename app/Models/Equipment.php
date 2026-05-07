@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Equipment extends Model
 {
     protected $table = 'equipments';
+    protected $primaryKey = 'eq_id';
     public $timestamps = false;
     protected $fillable = [
         'name',
