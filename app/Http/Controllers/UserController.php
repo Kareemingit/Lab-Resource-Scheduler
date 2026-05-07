@@ -11,6 +11,7 @@ use App\Models\Grant;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 //user module
 class UserController extends Controller
 {
@@ -23,10 +24,10 @@ class UserController extends Controller
         $user = User::create([
             'username' => $request->username,
             'name' => $request->name,
-            'password' => $request->password,
+            'password' => Hash::make($request->password),
             'role' => $request->role
         ]);
-        $userid = $user->id;
+        $userid = $user->user_id;
         if($request->role == 'researcher'){
             Researcher::create([
                 'user_id' => $userid
@@ -137,10 +138,9 @@ class UserController extends Controller
             'password' => 'required'
         ]);
         $user = User::where('username', $request->username)->first();
-        if (!$user || $user->password !== $request->password) {
+        if (!$user || !Hash::check($request->password, $user->password)) {
             dd('Invalid username or password');
         }
-        
         if($user->role == 'researcher'){
             $researcher = Researcher::findOrFail($user->user_id);
             $project = Project::where('project_id', $researcher->project_id)->first();
@@ -197,12 +197,12 @@ class UserController extends Controller
             'new_password' => 'required|min:12|confirmed'
         ]);
 
-        if ($user->password !== $validated['current_password']) {
+        if (!Hash::check($validated['current_password'], $user->password)) {
             return redirect()->back()->with('error', 'Current password is incorrect.');
         }
 
         $user->update([
-            'password' => $validated['new_password']
+            'password' => Hash::make($validated['new_password'])
         ]);
 
         return redirect()->route('lab_manager.profile', ['id' => $id])
