@@ -15,6 +15,7 @@ return new class extends Migration
             // $table->id();
             // $table->timestamps();
             $table->id('grant_id'); 
+            $table->string('name'); 
         
             $table->date('end_date');
             $table->float('fund');

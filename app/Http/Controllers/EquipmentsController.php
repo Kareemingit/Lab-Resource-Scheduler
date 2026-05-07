@@ -14,8 +14,11 @@ class EquipmentsController extends Controller
     public function index($id){
         $equipments = Equipment::all();
         $researcher = Researcher::findOrFail($id);
+        // dd($researcher);
         $project = $researcher->project_id;
-        $grants = Grant::where('project_id', $project)->get();
+
+        $grants = Grant::all();
+        $grant = $grants->find($project);
         return view('researcher.equipments', compact('equipments' , 'researcher', 'grants'));
     }
     

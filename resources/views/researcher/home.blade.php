@@ -210,7 +210,7 @@
         <div class="topbar-nav" id="topNav">
             <a class="nav-btn active" href="{{ route('researcher.home', ['id' => $researcher->user_id]) }}">Home</a>
             <a class="nav-btn" href="{{ route('researcher.equipments', ['id' => $researcher->user_id]) }}">Equipment</a>
-            <a class="nav-btn" href="">Reservations</a>
+            <a class="nav-btn active" href="{{ route('researcher.reservation', ['id' => $researcher->user_id]) }}">Reservations</a>
             <a class="nav-btn" href="{{ route('researcher.profile', ['id' => $researcher->user_id]) }}">Profile</a>
         </div>
 
@@ -260,7 +260,7 @@
                         <div class="btn-group" style="margin-top: 10px;">
                             {{-- Modals don't work without JS. 
                                  Better to link to a separate 'Create Session' page. --}}
-                            <a href="" class="btn btn-accent btn-sm">Start Session</a>
+                            <a href="{{ route('researcher.reservation', ['id' => $researcher->user_id]) }}" class="btn btn-accent btn-sm">Start Session</a>
                         </div>
                     </div>
                 </div>

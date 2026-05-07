@@ -14,7 +14,7 @@ class Grant extends Model
     protected $fillable = [
         'end_date',
         'fund',
-        'project_id',
-        'financial_id'
+        'financial_id',
+        'project_id'
     ];
 }

@@ -6,6 +6,7 @@ use App\Models\Equipment;
 use Illuminate\Http\Request;
 use App\Models\Reservation;
 use App\Models\Researcher;
+use Illuminate\Support\Facades\Schedule;
 use App\Models\Grant;
 use App\Models\Project;
 use Illuminate\Support\Carbon;
@@ -42,9 +43,9 @@ class ReservationController extends Controller
     }
 
     private function calculateCost($equipment_id, $duration){
-        $equipment = Equipment::where('eq_id', $equipment_id)->first();
+        $equipment = Equipment::findOrFail($equipment_id);
         $mainCost = $equipment->price * $duration;
-        $sitePercentage = $mainCost + ($mainCost * 0.10);
+        $sitePercentage = ($mainCost * 0.10);
         $fees = $sitePercentage + ($sitePercentage * 0.05);
         $totalCost = $mainCost + $sitePercentage + $fees;
         return $totalCost;
@@ -94,43 +95,151 @@ class ReservationController extends Controller
             'res_date'     => 'required|date',
             'start_time'   => 'required',
             'duration'     => 'required|numeric|min:1',
-            'grant_id'     => 'required'
+            'grant_id'     => 'required|exists:grants,grant_id'
         ]);
+
         $startDateTime = Carbon::parse($validatedData['res_date'] . ' ' . $validatedData['start_time']);
         $duration = (int) $validatedData['duration']; 
         $endDateTime = (clone $startDateTime)->addHours($duration);
-
+        $equipment = Equipment::findOrFail($validatedData['equipment_id']);
         if (!$this->checkAvailability($validatedData['equipment_id'], $startDateTime, $endDateTime)) {
-            //return redirect()->back()->with('error', 'The equipment is not available for the selected period.');
-            dd('The equipment is not available for the selected period.');
+            return redirect()->back()->with('error', 'The equipment is not available for the selected period.');
         }
 
         if (!$this->checkUserHasPermission($validatedData['user_id'], $validatedData['equipment_id'])) {
-            dd('You are not certified to use this equipment.');
+            return redirect()->back()->with('error', 'You are not certified to use this equipment.');
         }
 
-        $ammount = $this->calculateCost($validatedData['equipment_id'], $duration);
+        $primary_amount = $this->calculateCost($validatedData['equipment_id'], $duration);
+        
+        if (!is_null($equipment->sec_eq_id)) {
+            if (!$this->checkAvailability($equipment->sec_eq_id, $startDateTime, $endDateTime)) {
+                return redirect()->back()->with('error', 'The secondary equipment is not available for the selected period.');
+            }
+            if (!$this->checkUserHasPermission($validatedData['user_id'], $equipment->sec_eq_id)) {
+                return redirect()->back()->with('error', 'You are not certified to use the secondary equipment.');
+            }
+            $sec_amount = $this->calculateCost($equipment->sec_eq_id, $duration);
+            $total_amount = $primary_amount + $sec_amount;
 
-        if($this->isGrantBudgetExceeded($validatedData['grant_id'], $ammount)){
-            dd('The grant budget is exceeded. Cannot create reservation.');
+            if($this->isGrantBudgetExceeded($validatedData['grant_id'], $total_amount)){
+                return redirect()->back()->with('error', 'The grant budget is exceeded. Cannot create reservation for the secondary equipment.');
+            }
+            try {
+                $this->moneyTransfer($validatedData['grant_id'], $validatedData['user_id'], $total_amount);
+            } catch (\Exception $e) {
+                return redirect()->back()->with('error', 'Error processing payment: ' . $e->getMessage());
+            }
+
+            Reservation::create([
+                'eq_id'         => $validatedData['equipment_id'],
+                'researcher_id' => $validatedData['user_id'],
+                'start_date'    => $startDateTime,
+                'end_date'      => $endDateTime,
+                'grant_id'      => $validatedData['grant_id'],
+                'res_hours'    => $duration,
+                'status'        => 'pending',
+                'confirm_receipt' => 0,
+            ]);
+
+            Reservation::create([
+                'eq_id'         => $equipment->sec_eq_id,
+                'researcher_id' => $validatedData['user_id'],
+                'start_date'    => $startDateTime,
+                'end_date'      => $endDateTime,
+                'grant_id'      => $validatedData['grant_id'],
+                'res_hours'    => $duration,
+                'status'        => 'pending',
+                'confirm_receipt' => 0,
+            ]);
         }
-
-        try {
-            $this->moneyTransfer($validatedData['grant_id'], $validatedData['user_id'], $ammount);
-        } catch (\Exception $e) {
-            dd('Error processing payment: ' . $e->getMessage());
+        else{
+            if($this->isGrantBudgetExceeded($validatedData['grant_id'], $primary_amount)){
+                return redirect()->back()->with('error', 'The grant budget is exceeded. Cannot create reservation.');
+            }
+            try {
+                $this->moneyTransfer($validatedData['grant_id'], $validatedData['user_id'], $primary_amount);
+            } catch (\Exception $e) {
+                return redirect()->back()->with('error', 'Error processing payment: ' . $e->getMessage());
+            }
+            Reservation::create([
+                'eq_id'         => $validatedData['equipment_id'],
+                'researcher_id' => $validatedData['user_id'],
+                'start_date'    => $startDateTime,
+                'end_date'      => $endDateTime,
+                'grant_id'      => $validatedData['grant_id'],
+                'res_hours'    => $duration,
+                'status'        => 'pending',
+                'confirm_receipt' => 0,
+            ]);
         }
-
-        Reservation::create([
-            'eq_id'         => $validatedData['equipment_id'],
-            'researcher_id' => $validatedData['user_id'],
-            'start_date'    => $startDateTime,
-            'end_date'      => $endDateTime,
-            'grant_id'      => $validatedData['grant_id'],
-            'res_hours'    => $duration,
-            'status'        => 'pending',
-        ]);
 
         return redirect()->back()->with('success', 'Reservation created successfully.');
+    }
+    public function show($id){
+        $researcher = Researcher::findOrFail($id);
+        $researcher_id = $researcher->user_id;
+        $reservations = Reservation::where('researcher_id', $researcher_id)
+            ->orderBy('start_date', 'desc')
+            ->get();
+        $equipments = Equipment::all();
+
+        return view('researcher.reservation', [
+            'researcher' => $researcher,
+            'reservations' => $reservations,
+            'equipments'  => $equipments
+        ]);
+    }
+    public function start_session($id, $eq_id){
+        $researcher = Researcher::findOrFail($id);
+        $reservations = Reservation::where('researcher_id', $id)
+            ->orderBy('start_date', 'desc')
+            ->get();
+        
+
+        return view('researcher/confirm_receipt', [
+            'id'=>$id,
+            'eq_id'=>$eq_id,
+            'reservations'=>$reservations,
+            'researcher'=>$researcher
+        ]);
+    }
+
+    public function confirmReceipt($id, $eq_id){
+            $equipment = Equipment::findOrFail($eq_id);
+            $reservation = Reservation::where('researcher_id', $id)
+                ->where('eq_id', $eq_id)
+                ->orderBy('start_date', 'desc')
+                ->first();
+            if (!$reservation) {
+                return redirect()->back()->with('error', 'Reservation not found.');
+            }
+            if (!is_null($equipment->sec_eq_id)) {
+                $sec_reservation = Reservation::where('researcher_id', $id)
+                    ->where('eq_id', $equipment->sec_eq_id)
+                    ->where('start_date', $reservation->start_date)
+                    ->first();
+                if (!$sec_reservation) {
+                        return redirect()->back()->with('error', 'Secondary reservation not found.');
+                    }
+                
+                Reservation::where('researcher_id', $reservation->researcher_id)
+                    ->where('eq_id', $reservation->eq_id)
+                    ->where('start_date', $reservation->start_date)
+                    ->update(['confirm_receipt' => 1]);
+                    
+                Reservation::where('researcher_id', $reservation->researcher_id)
+                        ->where('eq_id', $equipment->sec_eq_id)
+                        ->where('start_date', $reservation->start_date)
+                        ->update(['confirm_receipt' => 1]);
+            }
+            else{
+                Reservation::where('researcher_id', $reservation->researcher_id)
+                    ->where('eq_id', $reservation->eq_id)
+                    ->where('start_date', $reservation->start_date)
+                    ->update(['confirm_receipt' => 1]);
+            }
+            return redirect()->back()->with('success', 'Receipt confirmed successfully.');
+        
     }
 }

@@ -5,6 +5,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\ReservationController;
 use App\Http\Controllers\EquipmentsController;
 use App\Http\Controllers\GrantController;
+
 //user module
 Route::get('/', function () {return view('login');})->name('login.view');
 Route::get('/register', function () {return view('register');})->name('register.view');
@@ -27,9 +28,20 @@ Route::post('/lab_manager/equipment/{eq_id}/report-accident', [EquipmentsControl
 //financial_department
 Route::get('/financial_department/{id}', [UserController::class, 'FinancialDepartmentShowProjects'])->name('financial_department.projects');
 Route::put('/financial_department/{id}/update-budget', [UserController::class, 'UpdateBudget'])->name('financial_department.update_budget');
-
+Route::get('/researcher/reservation/{id}/{eq_id}',[ReservationController::class, 'start_session'])->name('confirm.receipt');
+Route::post('/researcher/reservation/{id}/{eq_id}/confirm', [ReservationController::class, 'confirmReceipt'])->name('confirm.receipt.submit');
+Route::get('/researcher/reservation/{id}', [ReservationController::class, 'show'])->name('researcher.reservation');
 //resource control module
 //reservation
 Route::post('/reservations/store', [ReservationController::class, 'store'])->name('reservations.store');
 //grant
 Route::post('/grant/store' , [GrantController::class , 'store'])->name('grant.store');
+
+
+
+/*
+Objectives: 
+1. Start Reservation
+we press Submit reservation: 
+    3. Create Reservation
+*/

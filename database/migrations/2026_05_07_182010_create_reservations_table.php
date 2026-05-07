@@ -18,9 +18,10 @@ return new class extends Migration
             $table->dateTime('end_date');
             $table->float('res_hours');
             $table->string('status'); // VARCHAR(255) by default
-            
             $table->unsignedBigInteger('researcher_id');
             $table->unsignedBigInteger('eq_id');
+            $table->boolean('confirm_receipt');
+
             
             // Composite Primary Key
             $table->primary(['start_date', 'researcher_id', 'eq_id']);

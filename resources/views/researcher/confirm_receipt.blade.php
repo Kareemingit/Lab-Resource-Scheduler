@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Researcher Profile</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LabUs — Equipment</title>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
     <style>
         :root {
         --bg: #f4f5f7;
@@ -194,7 +195,21 @@
         .form-row { grid-template-columns:1fr; }
         .main { padding:16px; }
         }
+        .overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(2px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
 
+        /* Show overlay when its ID is in the URL (e.g., #reserve-1) */
+        .overlay:target {
+            display: flex;
+        }
     </style>
 </head>
 <body>
@@ -205,12 +220,13 @@
             </div>
             LabUs
         </div>
-
+        
+    
         <div class="topbar-nav" id="topNav">
             <a class="nav-btn" href="{{ route('researcher.home', ['id' => $researcher->user_id]) }}">Home</a>
             <a class="nav-btn" href="{{ route('researcher.equipments', ['id' => $researcher->user_id]) }}">Equipment</a>
             <a class="nav-btn active" href="{{ route('researcher.reservation', ['id' => $researcher->user_id]) }}">Reservations</a>
-            <a class="nav-btn active" href="{{ route('researcher.profile', ['id' => $researcher->user_id]) }}">Profile</a>
+            <a class="nav-btn" href="{{ route('researcher.profile', ['id' => $researcher->user_id]) }}">Profile</a>
         </div>
 
         <div class="topbar-right">
@@ -220,64 +236,17 @@
             </div>
         </div>
     </div>
-    <div class="main" style="max-width:100%">
-        <div class="page-header">
-            <h1>Profile</h1>
-            <p>Manage your account details</p>
-        </div>
+    @if(session('success'))
+        <div class="alert alert-success">{{ session('success') }}</div>
+    @endif
 
-        <!-- Profile Hero -->
-        <div class="profile-hero">
-            <div class="profile-av"> {{ substr($user->name, 0, 1) }}</div>
-            <div style="flex:1">
-                <div class="profile-name">{{ $user->name }}</div>
-                <div class="profile-meta">{{ ucfirst($user->role) }}</div>
-            </div>
-        </div>
+    @if(session('error'))
+        <div class="alert alert-danger">{{ session('error') }}</div>
+    @endif
 
-        <!-- Personal Information Card -->
-        <div class="card">
-            <div class="card-title">Personal Information</div>
-            <form action="" method="POST">
-                @csrf
-                @method('PUT')
-                <div class="form-group">
-                    <label>Full Name</label>
-                    <input name="name" value="{{ $user->name }}">
-                </div>
-                <div class="form-group">
-                    <label>Username</label>
-                    <input name="username" value="{{ $user->username }}">
-                </div>
-                <button type="submit" class="btn btn-accent btn-sm">Save Changes</button>
-            </form>
-        </div>
-
-        <div class="card">
-            <div class="card-title">Certifications</div>
-            <form action="{{ route('researcher.add_certification') }}" method="POST">
-                @csrf
-                <div class="form-group">
-                    <label>Add New Certification</label>
-                    <select name="certification">
-                        @foreach($certifications as $cert)
-                            <option value="{{ $cert->cert_id }}">{{ $cert->name }}</option>
-                        @endforeach
-                    </select>
-                    <input type="hidden" name="user_id" value="{{ $user->user_id }}">
-                </div>
-                <button type="submit" class="btn btn-accent btn-sm">Add Certification</button>
-            </form>
-
-            <div id="userCertsList" style="margin-top:12px">
-                @foreach($researcherCertifications ?? [] as $cert)
-                    <div class="cert-item" style="display:flex;align-items:center;gap:8px;padding:8px;background:rgba(0,255,0,0.1);border-radius:8px;margin-bottom:6px">
-                        <span style="color:green">✓</span>
-                        <span>{{ $cert->name }}</span>
-                    </div>
-                @endforeach
-            </div>
-        </div>
-    </div>
-</body>
-</html>
+    <form action="{{ route('confirm.receipt.submit', ['id' => $researcher->user_id, 'eq_id' => $eq_id]) }}" method="POST" style="padding: 20px 28px;">
+        @csrf
+        <button type="submit" class="btn btn-accent">Confirm Receipt</button>
+    </form>
+    </body>
+    </html>

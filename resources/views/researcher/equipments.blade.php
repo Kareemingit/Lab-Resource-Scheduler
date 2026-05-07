@@ -224,7 +224,7 @@
         <div class="topbar-nav" id="topNav">
             <a class="nav-btn" href="{{ route('researcher.home', ['id' => $researcher->user_id]) }}">Home</a>
             <a class="nav-btn active" href="{{ route('researcher.equipments', ['id' => $researcher->user_id]) }}">Equipment</a>
-            <a class="nav-btn" href="">Reservations</a>
+            <a class="nav-btn" href="{{ route('researcher.reservation', ['id' => $researcher->user_id]) }}">Reservations</a>
             <a class="nav-btn" href="{{ route('researcher.profile', ['id' => $researcher->user_id]) }}">Profile</a>
         </div>
 
@@ -272,7 +272,7 @@
             </div>
             <div class="equip-body">
                 <div class="equip-row"><span class="k">Category</span><span class="v">{{ $e->category }}</span></div>
-                <div class="equip-row"><span class="k">Rate</span><span class="v">${{ $e->price }}/session</span></div>
+                <div class="equip-row"><span class="k">Rate</span><span class="v">${{ $e->price }}/hr</span></div>
             </div>
             <div class="equip-foot">
                 @if($e->status === 'available')
@@ -308,7 +308,7 @@
                             <label>Grant</label>
                             <select name="grant_id">
                                 @foreach($grants as $grant)
-                                    <option value="{{ $grant->grant_id }}">{{ $grant->grant_id }}</option>
+                                    <option value="{{ $grant->grant_id }}">{{ $grant->name }}</option>
                                 @endforeach
                             </select>
                         </div>
@@ -319,12 +319,12 @@
                             <label>Start Time</label>
                             <select name="start_time">
                                 <option>09:00</option>
-                                <option>10:00</option>
-                                <option>11:00</option>
+                                <option>13:00</option>
+                                <option>17:00</option>
                             </select>
                         </div>
                         <div class="form-group">
-                            <label>Duration</label>
+                            <label>Duration(hours)</label>
                             <input type="number" name="duration" min="1" max="48" value="1" required style="background:var(--bg)">
                         </div>
                     </div>
