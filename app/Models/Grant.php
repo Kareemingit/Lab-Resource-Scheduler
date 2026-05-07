@@ -15,6 +15,7 @@ class Grant extends Model
         'end_date',
         'fund',
         'financial_id',
-        'project_id'
+        'project_id',
+        'name'
     ];
 }

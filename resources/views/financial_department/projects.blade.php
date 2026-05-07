@@ -283,6 +283,14 @@
                 </div>
                 <a href="#assignBudgetModal" class="btn btn-ghost btn-sm" style="margin-top:10px">Assign Budget</a>
             </div>
+            <div class="card">
+                <form action="{{ route('user.logout') }}" method="POST" style="margin:0;">
+                    @csrf
+                    <button type="submit" class="btn-logout" style="background:none; border:1px solid #ff4d4d; color:#ff4d4d; padding:4px 8px; border-radius:4px; cursor:pointer; font-size:12px;">
+                        Logout
+                    </button>
+                </form>
+            </div>
         </div>
     </div>
 
@@ -333,6 +341,10 @@
                 <div class="form-group">
                     <label>percentage</label>
                     <input type="number" name="percentage" placeholder="e.g. 50" required min = "0" max="100">
+                </div>
+                <div class="form-group">
+                    <label>Grant Name</label>
+                    <input type="text" name="grant_name" placeholder="e.g. comapany grant xyz" required>
                 </div>
                 <div class="btn-group" style="justify-content:flex-end; margin-top:10px">
                     <a href="#" class="btn btn-ghost">Cancel</a>

@@ -29,7 +29,8 @@ class GrantController extends Controller
                 'end_date' => $request->end_date,
                 'fund' => $amount,
                 'project_id' => $request->project_id,
-                'financial_id' => $request->user_id
+                'financial_id' => $request->user_id,
+                'name' => $request->grant_name ?? "UNKNOWN"
             ]);
 
             DB::commit();
