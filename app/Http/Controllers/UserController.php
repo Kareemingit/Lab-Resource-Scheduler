@@ -141,6 +141,12 @@ class UserController extends Controller
         if (!$user || !Hash::check($request->password, $user->password)) {
             dd('Invalid username or password');
         }
+
+        session([
+            'user_id' => $user->user_id,
+            'role'    => $user->role
+        ]);
+
         if($user->role == 'researcher'){
             $researcher = Researcher::findOrFail($user->user_id);
             $project = Project::where('project_id', $researcher->project_id)->first();
@@ -166,6 +172,12 @@ class UserController extends Controller
         }
     }
 
+    public function LogoutUser(Request $request){
+        session()->forget(['user_id', 'role']);
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+        return redirect()->route('login.view')->with('success', 'You have been logged out.');
+    }
     // Lab Manager Profile Methods
     public function LabManagerShowProfile($id){
         $user = User::findOrFail($id);

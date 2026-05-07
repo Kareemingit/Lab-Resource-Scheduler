@@ -278,6 +278,14 @@
                 @endforeach
             </div>
         </div>
+        <div class="card">
+            <form action="{{ route('user.logout') }}" method="POST" style="margin:0;">
+                @csrf
+                <button type="submit" class="btn-logout" style="background:none; border:1px solid #ff4d4d; color:#ff4d4d; padding:4px 8px; border-radius:4px; cursor:pointer; font-size:12px;">
+                    Logout
+                </button>
+            </form>
+        </div>
     </div>
 </body>
 </html>
