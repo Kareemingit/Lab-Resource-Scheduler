@@ -10,6 +10,7 @@ use App\Models\Certification;
 use App\Models\Grant;
 use App\Models\Equipment;
 use App\Models\LabManager;
+use App\Models\Supervisor;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -71,9 +72,9 @@ class UserController extends Controller
                 'user_id' => $userid
             ]);
         } else if($request->role == 'supervisor'){
-            //
-        } else if($request->role == 'pi'){
-            //
+            Supervisor::create([
+                'user_id' => $userid
+            ]);
         }
         return redirect()->route('admin.users' , ['id' => $id]);
     }
