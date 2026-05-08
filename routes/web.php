@@ -37,6 +37,8 @@ Route::middleware(['user_access'])->group(function () {
     Route::get('/admin/users/{id}' , [UserController::class , 'AdminShowUsers'])->name('admin.users');
     Route::get('/admin/profile/{id}' , [UserController::class , 'AdminShowProfile'])->name('admin.profile');
     Route::post('/admin/user-create/{id}' , [UserController::class , 'CreateUser'])->name('admin.user.create');
+    Route::put('/admin/user-update/{id}' , [UserController::class , 'UpdateUser'])->name('admin.user.update');
+    Route::delete('/admin/user-destroy/{id}/{user_id}' , [UserController::class , 'DestroyUser'])->name('admin.user.delete');
 });
 Route::post('/lab_manager/equipment/{id}/store', [EquipmentsController::class, 'store'])->name('equipment.store');
 Route::put('/lab_manager/equipment/{id}/update', [EquipmentsController::class, 'update'])->name('equipment.update');

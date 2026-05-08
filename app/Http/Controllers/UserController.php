@@ -79,6 +79,54 @@ class UserController extends Controller
         return redirect()->route('admin.users' , ['id' => $id]);
     }
 
+    public function UpdateUser(Request $request , $id){
+        $user = User::where('user_id', $request->user_id)->firstOrFail();
+        $request->validate([
+            'username' => 'required|string|max:255|unique:user_infos,username,' . $user->user_id . ',user_id',
+            'name'     => 'required|string|max:255',
+            'role'     => 'required|string',
+            'password' => 'nullable|min:12'
+        ]);
+        return DB::transaction(function () use ($request, $user, $id) 
+        {
+            $user->name = $request->name;
+            $user->username = $request->username;
+            if ($user->role != $request->role) {
+                if ($user->role == 'researcher') {
+                    Researcher::where('user_id', $user->user_id)->delete();
+                } else if ($user->role == 'financial_department') {
+                    FinancialDepartment::where('user_id', $user->user_id)->delete();
+                } else if ($user->role == 'lab_manager') {
+                    LabManager::where('user_id', $user->user_id)->delete();
+                } else if ($user->role == 'supervisor') {
+                    Supervisor::where('user_id', $user->user_id)->delete();
+                }
+
+                if ($request->role == 'researcher') {
+                    Researcher::create(['user_id' => $user->user_id]);
+                } else if ($request->role == 'financial_department') {
+                    FinancialDepartment::create(['user_id' => $user->user_id, 'budget' => 0]);
+                } else if ($request->role == 'lab_manager') {
+                    LabManager::create(['user_id' => $user->user_id]);
+                } else if ($request->role == 'supervisor') {
+                    Supervisor::create(['user_id' => $user->user_id]);
+                }
+                $user->role = $request->role;
+            }
+            if ($request->filled('password')) {
+                $user->password = Hash::make($request->password);
+            }
+            $user->save();
+            return redirect()->route('admin.users', ['id' => $id])
+                            ->with('success', 'User updated successfully.');
+        });
+    }
+
+    public function DestroyUser($id,$user_id) {
+        User::where('user_id', $user_id)->delete();
+        return redirect()->back()->with('success', 'User deleted.');
+    }
+
     public function ResearcherShowHome($id){
         $researcher = Researcher::findOrFail($id);
         $project = Project::where('project_id', $researcher->project_id)->first();

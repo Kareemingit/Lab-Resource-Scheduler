@@ -254,12 +254,17 @@
             <div class="card">
                 <table>
                     <thead>
-                        <tr><th>User</th><th>Role</th><th>Status</th><th>Actions</th></tr>
+                        <tr>
+                            <th>User</th>
+                            <th>Role</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
                     </thead>
                     <tbody>
                         @forelse($users as $user)
                         <tr>
-                            <td><strong>{{ $user->name }}</strong></td>
+                            <td><strong>{{ $user->username }}</strong></td>
                             <td>{{ $user->role }}</td>
                             <td>Active</td>
                             <td>
@@ -267,13 +272,53 @@
                                     <a href="#editUser-{{ $user->user_id }}" class="btn btn-sm">Edit</a>
                                     
                                     <!-- Delete via Form -->
-                                    <form action="" method="POST">
+                                    <form action="{{ route('admin.user.delete', [$admin->user_id, $user->user_id]) }}" method="POST">
                                         @csrf @method('DELETE')
-                                        <button class="btn btn-sm btn-red">Delete</button>
+                                        <button class="btn btn-sm btn-red" onclick="return confirm('Are you sure?')">Delete</button>
                                     </form>
                                 </div>
                             </td>
                         </tr>
+                        <div class="overlay" id="editUser-{{ $user->user_id }}">
+                            <div class="modal">
+                                <a href="#" class="close-btn">&times;</a>
+                                <h3>Edit User: {{ $user->username }}</h3>
+                                
+                                <!-- Updated to your Admin Update Route -->
+                                <form action="{{ route('admin.user.update', ['id' => $admin->user_id, 'user_id' => $user->user_id]) }}" method="POST">
+                                    @csrf
+                                    @method('PUT')
+                                    
+                                    <div class="form-group">
+                                        <label>Username</label>
+                                        <input name="username" value="{{ $user->username }}" required>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label>Full Name</label>
+                                        <input name="name" value="{{ $user->name }}" required>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label>Role</label>
+                                        <select name="role">
+                                            <option value="researcher" {{ $user->role == 'researcher' ? 'selected' : '' }}>Researcher</option>
+                                            <option value="pi" {{ $user->role == 'pi' ? 'selected' : '' }}>Principal Investigator</option>
+                                            <option value="financial_department" {{ $user->role == 'financial_department' ? 'selected' : '' }}>Financial Department</option>
+                                            <option value="lab_manager" {{ $user->role == 'lab_manager' ? 'selected' : '' }}>Lab Manager</option>
+                                            <option value="supervisor" {{ $user->role == 'supervisor' ? 'selected' : '' }}>Supervisor</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label>New Password (Leave blank to keep current)</label>
+                                        <input type="password" name="password" placeholder="Min. 12 characters">
+                                    </div>
+
+                                    <button type="submit" class="btn btn-accent">Update User</button>
+                                </form>
+                            </div>
+                        </div>
                         @empty
                         <tr><td colspan="4">No users found.</td></tr>
                         @endforelse
