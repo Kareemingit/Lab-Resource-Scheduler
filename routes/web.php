@@ -9,7 +9,7 @@ use App\Http\Controllers\GrantController;
 //user module
 Route::get('/', function () {return view('login');})->name('login.view');
 Route::get('/register', function () {return view('register');})->name('register.view');
-Route::post('/register' , [UserController::class, 'CreateUser'])->name('user.create');
+Route::post('/register' , [UserController::class, 'RegisterUser'])->name('user.create');
 Route::post('/login', [UserController::class, 'LoginUser'])->name('user.login');
 Route::post('/logout' , [UserController::class , 'LogoutUser'])->name('user.logout');
 //researcher
@@ -36,6 +36,7 @@ Route::middleware(['user_access'])->group(function () {
     Route::get('/admin/analytics/{id}' , [UserController::class , 'AdminShowAnalytics'])->name('admin.analytics');
     Route::get('/admin/users/{id}' , [UserController::class , 'AdminShowUsers'])->name('admin.users');
     Route::get('/admin/profile/{id}' , [UserController::class , 'AdminShowProfile'])->name('admin.profile');
+    Route::post('/admin/user-create/{id}' , [UserController::class , 'CreateUser'])->name('admin.user.create');
 });
 Route::post('/lab_manager/equipment/{id}/store', [EquipmentsController::class, 'store'])->name('equipment.store');
 Route::put('/lab_manager/equipment/{id}/update', [EquipmentsController::class, 'update'])->name('equipment.update');

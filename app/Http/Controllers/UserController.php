@@ -9,6 +9,7 @@ use App\Models\Researcher;
 use App\Models\Certification;
 use App\Models\Grant;
 use App\Models\Equipment;
+use App\Models\LabManager;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -16,7 +17,7 @@ use Illuminate\Support\Facades\Hash;
 //user module
 class UserController extends Controller
 {
-    public function CreateUser(Request $request){
+    public function RegisterUser(Request $request){
         $request->validate([
             'username' => 'required|unique:user_infos,username',
             'name' => 'required',
@@ -40,15 +41,41 @@ class UserController extends Controller
                 'budget' => 0
             ]);
             return redirect()->route('login.view');
-        } else if ($request->role == 'admin'){
-            // No additional table for admin role
-        } else if ($request->role == 'lab_manager'){
-            // No additional table for lab manager role
-        } else if ($request->role == 'supervisor'){
-            // No additional table for supervisor role
-        } else if ($request->role == 'pi'){
-            // No additional table for pi role
         }
+    }
+
+    public function CreateUser(Request $request , $id){
+        $request->validate([
+            'username' => 'required|unique:user_infos,username',
+            'name' => 'required',
+            'password' => 'required|min:12'
+        ]);
+        $user = User::create([
+            'username' => $request->username,
+            'name' => $request->name,
+            'password' => Hash::make($request->password),
+            'role' => $request->role
+        ]);
+        $userid = $user->user_id;
+        if($request->role == 'researcher'){
+            Researcher::create([
+                'user_id' => $userid
+            ]);
+        } else if($request->role == 'financial_department'){
+            FinancialDepartment::create([
+                'user_id' => $userid,
+                'budget' => 0
+            ]);
+        } else if($request->role == 'lab_manager'){
+            LabManager::create([
+                'user_id' => $userid
+            ]);
+        } else if($request->role == 'supervisor'){
+            //
+        } else if($request->role == 'pi'){
+            //
+        }
+        return redirect()->route('admin.users' , ['id' => $id]);
     }
 
     public function ResearcherShowHome($id){
@@ -223,7 +250,7 @@ class UserController extends Controller
     }
     //admin
     public function AdminShowAnalytics($id) {
-        $user = User::findOrFail($id);
+        $admin = User::findOrFail($id);
 
         $activeEquipmentCount = Equipment::where('status', 'available')->count();
         $activeResearchers = User::where('role', 'researcher')->count();
@@ -244,7 +271,7 @@ class UserController extends Controller
         }
 
         return view('admin.analytics', [
-            'user' => $user,
+            'admin' => $admin,
             'activeEquipment' => $activeEquipmentCount,
             'activeResearchers' => $activeResearchers,
             'revenue' => number_format($revenueMTD, 2),
@@ -253,7 +280,7 @@ class UserController extends Controller
     }
 
     public function AdminShowUsers(Request $request ,$id){
-        $user = User::findOrFail($id);
+        $admin = User::findOrFail($id);
         $query = User::query();
 
         if ($request->has('search')) {
@@ -267,7 +294,7 @@ class UserController extends Controller
         $researchers = User::where('role', 'researcher')->get();
 
         return view('admin.users', [
-            'user' => $user,
+            'admin' => $admin,
             'users' => $users,
             'researchers' => $researchers,
             'id' => $id
@@ -275,7 +302,7 @@ class UserController extends Controller
     }
 
     public function AdminShowProfile($id){
-        $user = User::where('user_id', $id)->first();
-        return view('admin.profile' , ['user' => $user]);
+        $admin = User::where('user_id', $id)->first();
+        return view('admin.profile' , ['admin' => $admin]);
     }
 }

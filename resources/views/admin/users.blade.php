@@ -221,9 +221,9 @@
         </div>
         
         <div class="topbar-nav" id="topNav">
-            <a class="nav-btn" href="{{ route('admin.analytics' , ['id' => $user->user_id]) }}">Analytics</a>
-            <a class="nav-btn active" href="{{ route('admin.users' , ['id' => $user->user_id]) }}">Users</a>
-            <a class="nav-btn" href="{{ route('admin.profile' , ['id' => $user->user_id]) }}">Profile</a>
+            <a class="nav-btn" href="{{ route('admin.analytics' , ['id' => $admin->user_id]) }}">Analytics</a>
+            <a class="nav-btn active" href="{{ route('admin.users' , ['id' => $admin->user_id]) }}">Users</a>
+            <a class="nav-btn" href="{{ route('admin.profile' , ['id' => $admin->user_id]) }}">Profile</a>
         </div>
 
         <div class="topbar-right">
@@ -296,18 +296,28 @@
         <div class="modal">
             <a href="#" class="close-btn">&times;</a>
             <h3>Add User</h3>
-            <form action="{{ route('user.create') }}" method="POST">
+            <form action="{{ route('admin.user.create' , ['id' => $admin->user_id])}}" method="POST">
                 @csrf
+                <div class="form-group">
+                    <label>Username</label>
+                    <input name="username" required>
+                </div>
                 <div class="form-group">
                     <label>Name</label>
                     <input name="name" required>
                 </div>
                 <div class="form-group">
+                    <label>Password</label>
+                    <input name="password" required>
+                </div>
+                <div class="form-group">
                     <label>Role</label>
                     <select name="role">
                         <option value="researcher">Researcher</option>
-                        <option value="pi">PI</option>
+                        <option value="pi">Principal Investigator</option>
+                        <option value="financial_department">Financial Department</option>
                         <option value="lab_manager">Lab Manager</option>
+                        <option value="supervisor">Supervisor</option>
                     </select>
                 </div>
                 <button type="submit" class="btn btn-accent">Create</button>

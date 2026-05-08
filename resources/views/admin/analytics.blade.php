@@ -221,9 +221,9 @@
         </div>
         
         <div class="topbar-nav" id="topNav">
-            <a class="nav-btn active" href="{{ route('admin.analytics' , ['id' => $user->user_id]) }}">Analytics</a>
-            <a class="nav-btn" href="{{ route('admin.users' , ['id' => $user->user_id]) }}">Users</a>
-            <a class="nav-btn" href="{{ route('admin.profile' , ['id' => $user->user_id]) }}">Profile</a>
+            <a class="nav-btn active" href="{{ route('admin.analytics' , ['id' => $admin->user_id]) }}">Analytics</a>
+            <a class="nav-btn" href="{{ route('admin.users' , ['id' => $admin->user_id]) }}">Users</a>
+            <a class="nav-btn" href="{{ route('admin.profile' , ['id' => $admin->user_id]) }}">Profile</a>
         </div>
 
         <div class="topbar-right">

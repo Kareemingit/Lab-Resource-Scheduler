@@ -207,9 +207,9 @@
         </div>
         
         <div class="topbar-nav" id="topNav">
-            <a class="nav-btn" href="{{ route('admin.analytics' , ['id' => $user->user_id]) }}">Analytics</a>
-            <a class="nav-btn" href="{{ route('admin.users' , ['id' => $user->user_id]) }}">Users</a>
-            <a class="nav-btn active" href="{{ route('admin.profile' , ['id' => $user->user_id]) }}">Profile</a>
+            <a class="nav-btn" href="{{ route('admin.analytics' , ['id' => $admin->user_id]) }}">Analytics</a>
+            <a class="nav-btn" href="{{ route('admin.users' , ['id' => $admin->user_id]) }}">Users</a>
+            <a class="nav-btn active" href="{{ route('admin.profile' , ['id' => $admin->user_id]) }}">Profile</a>
         </div>
 
         <div class="topbar-right">
@@ -227,10 +227,10 @@
 
         <!-- Profile Hero -->
         <div class="profile-hero">
-            <div class="profile-av"> {{ substr($user->name, 0, 1) }}</div>
+            <div class="profile-av"> {{ substr($admin->name, 0, 1) }}</div>
             <div style="flex:1">
-                <div class="profile-name">{{ $user->name }}</div>
-                <div class="profile-meta">{{ ucfirst($user->role) }}</div>
+                <div class="profile-name">{{ $admin->name }}</div>
+                <div class="profile-meta">{{ ucfirst($admin->role) }}</div>
             </div>
         </div>
 
@@ -242,11 +242,11 @@
                 @method('PUT')
                 <div class="form-group">
                     <label>Full Name</label>
-                    <input name="name" value="{{ $user->name }}">
+                    <input name="name" value="{{ $admin->name }}">
                 </div>
                 <div class="form-group">
                     <label>Username</label>
-                    <input name="username" value="{{ $user->username }}">
+                    <input name="username" value="{{ $admin->username }}">
                 </div>
                 <button type="submit" class="btn btn-accent btn-sm">Save Changes</button>
             </form>
