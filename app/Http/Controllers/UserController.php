@@ -8,6 +8,7 @@ use App\Models\Project;
 use App\Models\Researcher;
 use App\Models\Certification;
 use App\Models\Grant;
+use App\Models\Equipment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -221,9 +222,34 @@ class UserController extends Controller
             ->with('success', 'Password updated successfully.');
     }
     //admin
-    public function AdminShowAnalytics($id){
+    public function AdminShowAnalytics($id) {
         $user = User::findOrFail($id);
-        return view('admin.analytics' , ['user' => $user]);
+
+        $activeEquipmentCount = Equipment::where('status', 'available')->count();
+        $activeResearchers = User::where('role', 'researcher')->count();
+        
+        $revenueMTD = DB::table('reservations')
+            ->sum('res_hours');
+
+        $mostUsed = Equipment::orderBy('used_hours', 'desc')
+            ->limit(5)
+            ->get();
+
+        $bars = [];
+        foreach ($mostUsed as $item) {
+            $bars[] = [
+                'label' => $item->name,
+                'value' => $item->used_hours
+            ];
+        }
+
+        return view('admin.analytics', [
+            'user' => $user,
+            'activeEquipment' => $activeEquipmentCount,
+            'activeResearchers' => $activeResearchers,
+            'revenue' => number_format($revenueMTD, 2),
+            'bars' => $bars
+        ]);
     }
 
     public function AdminShowUsers(Request $request ,$id){

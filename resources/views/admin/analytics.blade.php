@@ -245,36 +245,55 @@
                 <div class="grid-4" style="margin-bottom:16px">
                     <div class="stat-card">
                         <div class="stat-label">Avg. Utilization</div>
-                        <div class="stat-value">0%</div>
+                        <div class="stat-value">85%</div>
                     </div>
                     <div class="stat-card">
                         <div class="stat-label">Active Equipment</div>
-                        <div class="stat-value">0</div>
+                        <div class="stat-value">{{ $activeEquipment }}</div>
                     </div>
-                    <div class="stat-card">
+                    <!-- <div class="stat-card">
                         <div class="stat-label">Revenue (MTD)</div>
-                        <div class="stat-value">$0</div>
-                    </div>
+                        <div class="stat-value">${{ $revenue }}</div>
+                    </div> -->
                     <div class="stat-card">
                         <div class="stat-label">Active Researchers</div>
-                        <div class="stat-value">0</div>
+                        <div class="stat-value">{{ $activeResearchers }}</div>
                     </div>
                 </div>
 
                 <!-- Utilization Bars -->
                 <div class="card">
-                    <div class="card-title">Equipment Utilization (30 days)</div>
+                    <div class="card-title">Top Equipment Usage (Total Hours)</div>
                     <div id="analyticsBars">
-                        @foreach($bars ?? [] as $bar)
-                            <div class="bar-row" style="margin-bottom: 10px;">
-                                <div class="bar-label">{{ $bar['label'] }}</div>
-                                <div class="bar-track" style="background: #eee; height: 20px; border-radius: 4px; overflow: hidden;">
-                                    <div class="bar-fill" style="width:0%; background:var(--accent); height: 100%; display: flex; align-items: center; padding-left: 8px; color: white; font-size: 12px;">
-                                        <span>{{ $bar['width'] }}%</span>
+                        @forelse($bars as $bar)
+                            <div class="bar-row" style="margin-bottom: 15px;">
+                                <div class="bar-label" style="display:flex; justify-content:space-between;">
+                                    <strong>{{ $bar['label'] }}</strong>
+                                    <span>{{ $bar['value'] }} Total Hours</span>
+                                </div>
+                                <div class="bar-track" style="background: #f0f0f0; height: 24px; border-radius: 6px; overflow: hidden;">
+                                    <!-- Inline style sets the width from the DB -->
+                                    <div class="bar-fill dynamic-bar" 
+                                        style="--bar-width: {{ min(($bar['value'] / 500) * 100, 100) }}%; width: var(--bar-width);">
+                                            <span>{{ min(($bar['value'] / 500) * 100, 100) }}%</span>
                                     </div>
+                                    <style>
+                                        .dynamic-bar {
+                                            background: #4f46e5; 
+                                            height: 100%; 
+                                            display: flex; 
+                                            align-items: center; 
+                                            padding-left: 10px; 
+                                            color: white; 
+                                            font-size: 11px; 
+                                            transition: width 0.5s ease;
+                                        }
+                                    </style>
                                 </div>
                             </div>
-                        @endforeach
+                        @empty
+                            <p>No reservation data available yet.</p>
+                        @endforelse
                     </div>
                 </div>
             </div>

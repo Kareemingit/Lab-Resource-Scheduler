@@ -111,7 +111,8 @@ class ReservationController extends Controller
         }
 
         $primary_amount = $this->calculateCost($validatedData['equipment_id'], $duration);
-        
+        $equipment->increment('used_hours', $duration);
+
         if (!is_null($equipment->sec_eq_id)) {
             if (!$this->checkAvailability($equipment->sec_eq_id, $startDateTime, $endDateTime)) {
                 return redirect()->back()->with('error', 'The secondary equipment is not available for the selected period.');
@@ -130,6 +131,8 @@ class ReservationController extends Controller
             } catch (\Exception $e) {
                 return redirect()->back()->with('error', 'Error processing payment: ' . $e->getMessage());
             }
+            $sec_equipment = Equipment::findOrFail($equipment->sec_eq_id);
+            $sec_equipment->increment('used_hours', $duration);
 
             Reservation::create([
                 'eq_id'         => $validatedData['equipment_id'],
