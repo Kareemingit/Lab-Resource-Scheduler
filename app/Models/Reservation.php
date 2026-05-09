@@ -16,6 +16,7 @@ class Reservation extends Model
         'end_date',
         'status',
         'res_hours',
-        'confirm_receipt'
+        'confirm_receipt',
+        'authorized'
     ];
 }

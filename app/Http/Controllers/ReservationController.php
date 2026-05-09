@@ -245,4 +245,79 @@ class ReservationController extends Controller
             return redirect()->back()->with('success', 'Receipt confirmed successfully.');
         
     }
+    public function authorize($id, $eq_id){
+            $equipment = Equipment::findOrFail($eq_id);
+            $reservation = Reservation::where('researcher_id', $id)
+                ->where('eq_id', $eq_id)
+                ->orderBy('start_date', 'desc')
+                ->first();
+            if (!$reservation) {
+                return redirect()->back()->with('error', 'Reservation not found.');
+            }
+            if (!is_null($equipment->sec_eq_id)) {
+                $sec_reservation = Reservation::where('researcher_id', $id)
+                    ->where('eq_id', $equipment->sec_eq_id)
+                    ->where('start_date', $reservation->start_date)
+                    ->first();
+                if (!$sec_reservation) {
+                        return redirect()->back()->with('error', 'Secondary reservation not found.');
+                    }
+                
+                Reservation::where('researcher_id', $reservation->researcher_id)
+                    ->where('eq_id', $reservation->eq_id)
+                    ->where('start_date', $reservation->start_date)
+                    ->update(['authorized' => 1]);
+                    
+                Reservation::where('researcher_id', $reservation->researcher_id)
+                        ->where('eq_id', $equipment->sec_eq_id)
+                        ->where('start_date', $reservation->start_date)
+                        ->update(['authorized' => 1]);
+            }
+            else{
+                Reservation::where('researcher_id', $reservation->researcher_id)
+                    ->where('eq_id', $reservation->eq_id)
+                    ->where('start_date', $reservation->start_date)
+                    ->update(['authorized' => 1]);
+            }
+            return redirect()->back()->with('success', 'Authorization confirmed successfully.');
+        
+    }
+    public function assign($id, $eq_id){
+            $equipment = Equipment::findOrFail($eq_id);
+            $reservation = Reservation::where('researcher_id', $id)
+                ->where('eq_id', $eq_id)
+                ->orderBy('start_date', 'desc')
+                ->first();
+            if (!$reservation) {
+                return redirect()->back()->with('error', 'Reservation not found.');
+            }
+            if (!is_null($equipment->sec_eq_id)) {
+                $sec_reservation = Reservation::where('researcher_id', $id)
+                    ->where('eq_id', $equipment->sec_eq_id)
+                    ->where('start_date', $reservation->start_date)
+                    ->first();
+                if (!$sec_reservation) {
+                        return redirect()->back()->with('error', 'Secondary reservation not found.');
+                    }
+                
+                Reservation::where('researcher_id', $reservation->researcher_id)
+                    ->where('eq_id', $reservation->eq_id)
+                    ->where('start_date', $reservation->start_date)
+                    ->update(['assigned' => 1]);
+                    
+                Reservation::where('researcher_id', $reservation->researcher_id)
+                        ->where('eq_id', $equipment->sec_eq_id)
+                        ->where('start_date', $reservation->start_date)
+                        ->update(['assigned' => 1]);
+            }
+            else{
+                Reservation::where('researcher_id', $reservation->researcher_id)
+                    ->where('eq_id', $reservation->eq_id)
+                    ->where('start_date', $reservation->start_date)
+                    ->update(['assigned' => 1]);
+            }
+            return redirect()->back()->with('success', 'Assignment confirmed successfully.');
+        
+    }
+
 }

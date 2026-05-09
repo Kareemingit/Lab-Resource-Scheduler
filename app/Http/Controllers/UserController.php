@@ -7,6 +7,7 @@ use App\Models\FinancialDepartment;
 use App\Models\Project;
 use App\Models\Researcher;
 use App\Models\Certification;
+use App\Models\Reservation;
 use App\Models\Grant;
 use App\Models\Equipment;
 use App\Models\LabManager;
@@ -216,7 +217,7 @@ class UserController extends Controller
         ]);
         $user = User::where('username', $request->username)->first();
         if (!$user || !Hash::check($request->password, $user->password)) {
-            dd('Invalid username or password');
+            @dd('Invalid username or password.');
         }
 
         session([
@@ -243,9 +244,9 @@ class UserController extends Controller
         } else if ($user->role == 'lab_manager'){
             return redirect()->route('lab_manager.equipments', ['id' => $user->user_id]);
         } else if ($user->role == 'supervisor'){
-            //return redirect()->route('supervisor.home');
+            return redirect()->route('supervisor.home', ['id' => $user->user_id]);
         } else if ($user->role == 'pi'){
-            //return redirect()->route('pi.home');
+            return redirect()->route('pi.home', ['id' => $user->user_id]);
         }
     }
 
@@ -353,5 +354,49 @@ class UserController extends Controller
     public function AdminShowProfile($id){
         $admin = User::where('user_id', $id)->first();
         return view('admin.profile' , ['admin' => $admin]);
+    }
+    public function PiShowProfile($id){
+        $user = User::where('user_id', $id)->first();
+        return view('pi.profile' , ['user' => $user]);
+    }
+    public function PiShowHome($id){
+        $pi = User::findOrFail($id);
+        return view('pi.home', ['pi' => $pi]);
+    }
+    public function PiShowReservation($id){
+        $pi = User::findOrFail($id);
+        $reservations = Reservation::all();
+        $equipments = Equipment::all();
+        return view('pi.reservation', ['pi' => $pi, 'reservations' => $reservations, 'equipments' => $equipments]);
+    }
+    
+    public function SuperShowHome($id){
+        $supervisor = User::findOrFail($id);
+        return view('supervisor.home', ['supervisor' => $supervisor]);
+    }
+    public function SuperShowProfile($id){
+        $user = User::where('user_id', $id)->first();
+        $AllCertifications = Certification::all();
+        $supervisorCertifications = DB::table('certification_researcher')
+            ->join('certifications', 'certification_researcher.cert_id', '=', 'certifications.cert_id')
+            ->where('certification_researcher.researcher_id', $id)
+            ->select('certifications.name')
+            ->get();
+        return view('supervisor.profile' , [
+            'user' => $user, 
+            'certifications' => $AllCertifications,
+            'researcherCertifications' => $supervisorCertifications
+            ]);
+    }
+    public function SuperShowReservation($id){
+        $supervisor = User::findOrFail($id);
+        $reservations = Reservation::all();
+        $superReservations = DB::table('reservations')
+            ->join('equipments', 'reservations.eq_id', '=', 'equipments.eq_id')
+            ->where('equipments.supervisor_id', $id)
+            ->select('reservations.*')
+            ->get();
+        $equipments = Equipment::all();
+        return view('supervisor.reservation', ['supervisor' => $supervisor, 'reservations' => $superReservations, 'equipments' => $equipments]);
     }
 }

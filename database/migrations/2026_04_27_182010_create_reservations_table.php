@@ -20,7 +20,6 @@ return new class extends Migration
             $table->string('status'); // VARCHAR(255) by default
             $table->unsignedBigInteger('researcher_id');
             $table->unsignedBigInteger('eq_id');
-            $table->boolean('confirm_receipt');
 
             
             // Composite Primary Key

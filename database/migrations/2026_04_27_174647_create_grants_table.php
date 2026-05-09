@@ -14,8 +14,7 @@ return new class extends Migration
         Schema::create('grants', function (Blueprint $table) {
             // $table->id();
             // $table->timestamps();
-            $table->id('grant_id'); 
-            $table->string('name'); 
+            $table->id('grant_id');
         
             $table->date('end_date');
             $table->float('fund');
