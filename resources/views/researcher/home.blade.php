@@ -246,11 +246,11 @@
                     </div>
                     <div class="stat-card">
                         <div class="stat-label">Reservations</div>
-                        <div class="stat-value">0</div>
+                        <div class="stat-value">{{$resCount}}</div>
                     </div>
                     <div class="stat-card">
                         <div class="stat-label">Active Certs</div>
-                        <div class="stat-value">1</div>
+                        <div class="stat-value">{{$certificationCount}}</div>
                     </div>
                 </div>
 

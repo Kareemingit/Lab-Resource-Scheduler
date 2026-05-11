@@ -132,7 +132,18 @@ class UserController extends Controller
     public function ResearcherShowHome($id){
         $researcher = Researcher::findOrFail($id);
         $project = Project::where('project_id', $researcher->project_id)->first();
-        return view('researcher.home', ['researcher' => $researcher, 'project' => $project ?? null]);
+        $certCount = DB::table('certification_researcher')
+                ->where('researcher_id', $id)
+                ->count();
+        $resCount = DB::table('reservations')
+        ->where('researcher_id', $id)
+        ->count();
+        return view('researcher.home', [
+            'researcher' => $researcher, 
+            'project' => $project ?? null,
+            'certificationCount' => $certCount,
+            'resCount' => $resCount
+        ]);
     }
 
     public function AddCertification(Request $request){
