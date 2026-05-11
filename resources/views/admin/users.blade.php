@@ -221,9 +221,10 @@
         </div>
         
         <div class="topbar-nav" id="topNav">
-            <a class="nav-btn" href="{{ route('admin.analytics' , ['id' => $admin->user_id]) }}">Analytics</a>
-            <a class="nav-btn active" href="{{ route('admin.users' , ['id' => $admin->user_id]) }}">Users</a>
-            <a class="nav-btn" href="{{ route('admin.profile' , ['id' => $admin->user_id]) }}">Profile</a>
+            <a class="nav-btn active" href="{{ route('admin.analytics', ['id' => $admin->user_id]) }}">Analytics</a>
+            <a class="nav-btn" href="{{ route('admin.bill', ['id' => $admin->user_id]) }}">Bills</a>
+            <a class="nav-btn" href="{{ route('admin.users', ['id' => $admin->user_id]) }}">Users</a>
+            <a class="nav-btn" href="{{ route('admin.profile', ['id' => $admin->user_id]) }}">Profile</a>
         </div>
 
         <div class="topbar-right">
@@ -246,7 +247,7 @@
                     <button type="submit" class="btn btn-sm">Search</button>
                 </div>
                 <div style="margin-left:auto; display:flex; gap:8px">
-                    <!-- <a href="#issueCreditModal" class="btn btn-ghost btn-sm">Issue Credits</a> -->
+                    <a href="#issueCreditModal" class="btn btn-ghost btn-sm">Issue Credits</a>
                     <a href="#addUserModal" class="btn btn-accent btn-sm">+ Add User</a>
                 </div>
             </form>
@@ -370,28 +371,5 @@
         </div>
     </div>
 
-    <!-- ISSUE CREDIT MODAL -->
-    <div class="overlay" id="issueCreditModal">
-        <div class="modal">
-            <a href="#" class="close-btn">&times;</a>
-            <h3>Issue Credits</h3>
-            <form action="" method="POST">
-                @csrf
-                <div class="form-group">
-                    <label>Researcher</label>
-                    <select name="user_id">
-                        @foreach($researchers as $r)
-                            <option value="{{ $r->user_id }}">{{ $r->name }}</option>
-                        @endforeach
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Amount ($)</label>
-                    <input type="number" name="amount">
-                </div>
-                <button type="submit" class="btn btn-accent">Issue</button>
-            </form>
-        </div>
-    </div>
 </body>
 </html>
