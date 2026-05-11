@@ -246,7 +246,7 @@
                     <button type="submit" class="btn btn-sm">Search</button>
                 </div>
                 <div style="margin-left:auto; display:flex; gap:8px">
-                    <a href="#issueCreditModal" class="btn btn-ghost btn-sm">Issue Credits</a>
+                    <!-- <a href="#issueCreditModal" class="btn btn-ghost btn-sm">Issue Credits</a> -->
                     <a href="#addUserModal" class="btn btn-accent btn-sm">+ Add User</a>
                 </div>
             </form>
