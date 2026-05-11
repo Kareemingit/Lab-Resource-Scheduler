@@ -253,31 +253,6 @@
         </div>
 
         <div class="card">
-            <div class="card-title">Certifications</div>
-            <form action="{{ route('researcher.add_certification') }}" method="POST">
-                @csrf
-                <div class="form-group">
-                    <label>Add New Certification</label>
-                    <select name="certification">
-                        @foreach($certifications as $cert)
-                            <option value="{{ $cert->cert_id }}">{{ $cert->name }}</option>
-                        @endforeach
-                    </select>
-                    <input type="hidden" name="user_id" value="{{ $user->user_id }}">
-                </div>
-                <button type="submit" class="btn btn-accent btn-sm">Add Certification</button>
-            </form>
-
-            <div id="userCertsList" style="margin-top:12px">
-                @foreach($researcherCertifications ?? [] as $cert)
-                    <div class="cert-item" style="display:flex;align-items:center;gap:8px;padding:8px;background:rgba(0,255,0,0.1);border-radius:8px;margin-bottom:6px">
-                        <span style="color:green">✓</span>
-                        <span>{{ $cert->name }}</span>
-                    </div>
-                @endforeach
-            </div>
-        </div>
-        <div class="card">
             <form action="{{ route('user.logout') }}" method="POST" style="margin:0;">
                 @csrf
                 <button type="submit" class="btn-logout" style="background:none; border:1px solid #ff4d4d; color:#ff4d4d; padding:4px 8px; border-radius:4px; cursor:pointer; font-size:12px;">
