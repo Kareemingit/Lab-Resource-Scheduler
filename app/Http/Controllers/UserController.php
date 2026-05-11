@@ -404,6 +404,23 @@ class UserController extends Controller
         $bill->save();
         return redirect()->route('admin.bill', ['id' => $id])->with('success', 'Credit issued successfully.');
     }
+    public function challenge_bill($id){
+        $researcher = Researcher::findOrFail($id);
+        $grants = Grant::where('project_id', $researcher->project_id)->get();
+        return view('researcher.challenge', [
+            'researcher' => $researcher,
+            'grants' => $grants
+        ]);
+    }
+    public function bill($id, Request $request){
+        $researcher = Researcher::findOrFail($id);
+        Bill::create([
+            'grant_id' => $request->grant,
+            'project_id' => $researcher->project_id,
+            'user_id' => $researcher->user_id,
+        ]);
+        return redirect()->route('researcher.home', ['id' => $id])->with('success', 'Bill submitted successfully.');
+    }
     public function PiShowProfile($id){
         $user = User::where('user_id', $id)->first();
         return view('pi.profile' , ['user' => $user]);

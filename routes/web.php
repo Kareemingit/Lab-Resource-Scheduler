@@ -18,6 +18,8 @@ Route::middleware(['user_access'])->group(function () {
     Route::get('/researcher/profile/{id}', [UserController::class, 'ResearcherShowProfile'])->name('researcher.profile');
     Route::put('/researcher/profile/{id}', [UserController::class, 'UpdateProfile'])->name('researcher.update_profile');
     Route::get('/researcher/home/{id}', [UserController::class, 'ResearcherShowHome'])->name('researcher.home');
+    Route::get('/researcher/home/challenge/{id}', [UserController::class, 'challenge_bill'])->name('researcher.challenge');
+    Route::post('/researcher/bill/{id}', [UserController::class, 'bill'])->name('researcher.bill');
     Route::get('/researcher/equipments/{id}', [EquipmentsController::class, 'index'])->name('researcher.equipments');
     Route::post('/researcher/reservation/{id}/{eq_id}/confirm', [ReservationController::class, 'confirmReceipt'])->name('confirm.receipt.submit');
     Route::get('/researcher/reservation/{id}', [ReservationController::class, 'show'])->name('researcher.reservation');

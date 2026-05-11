@@ -222,86 +222,19 @@
         </div>
     </div>
 
-    <div class="page active" id="page-home">
-        <div class="main" style="max-width:100%">
-            <div class="page-header">
-                <h1>Dashboard</h1>
-                <p>Welcome back, {{ Auth::user()->name ?? 'Researcher' }}.</p>
-            </div>
+    <div class="page active" id="homePage">
 
-            <div id="dynamicHomeContent">
-                {{-- Logic moved from JS to Blade --}}
-                @php
-                    $activeSessions = 0; // Replace with $user->sessions()->whereNull('endTime')->count()
-                @endphp
-
-                <div class="alert alert-info">
-                    You have {{ $activeSessions }} active session(s).
-                </div>
-
-                <div class="grid-4">
-                    <div class="stat-card">
-                        <div class="stat-label">Grant Balance</div>
-                        <div class="stat-value">${{ $project->balance ?? 0 }}</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-label">Reservations</div>
-                        <div class="stat-value">0</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-label">Active Certs</div>
-                        <div class="stat-value">1</div>
-                    </div>
-                </div>
-
-                <div class="grid-2" style="margin-top: 20px;">
-                    <div class="card">
-                        <div class="card-title">Today's Sessions</div>
-                        <div class="btn-group" style="margin-top: 10px;">
-                            {{-- Modals don't work without JS. 
-                            Better to link to a separate 'Create Session' page. --}}
-                            <a href="{{ route('researcher.reservation', ['id' => $researcher->user_id]) }}" class="btn btn-accent btn-sm">Start Session</a>
-                            <a href="{{ route('researcher.challenge', ['id' => $researcher->user_id]) }}" class="btn btn-accent">Challenge a bill</a>   
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="overlay" id="startModal">
-        <div class="modal">
-            <div class="modal-head">
-                <div class="modal-title">Start Session</div>
-                <button class="modal-close" onclick="closeModal('startModal')">×</button>
-            </div>
-            <div class="form-group">
-                <label>Equipment</label>
-                <select id="startEquipSelect"></select>
-            </div>
-            <div class="form-row">
                 <div class="form-group">
-                    <label>Start Time</label>
-                    <input type="time" id="startTime" value="09:00"/>
+                <form action="{{ route('researcher.bill', ['id'=>$researcher->user_id]) }}" method="POST">
+                @csrf
+                <label>Challenge a Bill</label>
+                    <select name="grant">
+                        @foreach($grants as $grant)
+                            <option value="{{ $grant->grant_id }}">{{ $grant->name }}</option>
+                        @endforeach
+                    </select>
+                    <button type="submit" class="btn btn-accent btn-sm">Challenge a bill</button>
+                    </form>
                 </div>
-                <div class="form-group">
-                    <label>Expected End</label>
-                    <input type="time" id="endTime" value="11:30"/>
-                </div>
-            </div>
-            <div class="form-group">
-                <label>Grant</label>
-                <select id="startGrantSelect">
-                    <option>NSF-2024-089</option>
-                    <option>NIH-2023-445</option>
-                    <option>DOE-2024-001</option>
-                </select>
-            </div>
-            <div class="btn-group" style="justify-content:flex-end;margin-top:6px">
-                <button class="btn btn-ghost" onclick="closeModal('startModal')">Cancel</button>
-                <button class="btn btn-accent" onclick="startSessionSubmit()">Start Session</button>
-            </div>
+
         </div>
-    </div>
-    
-</body>
-</html>
