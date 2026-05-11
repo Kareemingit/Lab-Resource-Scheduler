@@ -36,6 +36,10 @@ Route::middleware(['user_access'])->group(function () {
     Route::get('/admin/analytics/{id}' , [UserController::class , 'AdminShowAnalytics'])->name('admin.analytics');
     Route::get('/admin/users/{id}' , [UserController::class , 'AdminShowUsers'])->name('admin.users');
     Route::get('/admin/profile/{id}' , [UserController::class , 'AdminShowProfile'])->name('admin.profile');
+    Route::get('/admin/bill/{id}' , [UserController::class , 'showbill'])->name('admin.bill');
+    Route::get('/admin/bill/{id}/{bill_id}/show' , [UserController::class , 'show_issue_credit'])->name('admin.show_issue_credit');
+    Route::post('/admin/bill/{id}/{bill_id}/show' , [UserController::class , 'show_issue_credit'])->name('admin.show_issue_credit');
+    Route::post('/admin/bill/{id}/{bill_id}' , [UserController::class , 'issue_credit'])->name('admin.issue_credit');
     Route::put('/admin/profile/{id}', [UserController::class, 'UpdateProfile'])->name('admin.update_profile');
     Route::post('/admin/user-create/{id}' , [UserController::class , 'CreateUser'])->name('admin.user.create');
     Route::put('/admin/user-update/{id}' , [UserController::class , 'UpdateUser'])->name('admin.user.update');

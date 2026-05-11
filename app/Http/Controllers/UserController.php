@@ -7,6 +7,7 @@ use App\Models\FinancialDepartment;
 use App\Models\Project;
 use App\Models\Researcher;
 use App\Models\Certification;
+use App\Models\bill;
 use App\Models\Reservation;
 use App\Models\Grant;
 use App\Models\Equipment;
@@ -374,6 +375,34 @@ class UserController extends Controller
     public function AdminShowProfile($id){
         $admin = User::where('user_id', $id)->first();
         return view('admin.profile' , ['admin' => $admin]);
+    }
+    public function showbill($id){
+        $admin = User::where('user_id', $id)->first();
+        $bills = Bill::all();
+        return view('admin.bill' , [
+            'admin' => $admin, 
+            'bills' => $bills
+            ]);
+    }
+    public function show_issue_credit($id, $bill_id){
+        $bill = Bill::FindOrFail($bill_id);
+        return view('admin.show_issue_credit', [
+            'admin' => User::findOrFail($id),
+            'bill' => $bill,
+            'id' => $id,
+            'bill_id' => $bill_id
+        ]);
+    }
+    public function issue_credit($id, $bill_id, Request $request){
+        $bill = Bill::findOrFail($bill_id);
+        Bill::where('bill_id', $bill->bill_id)
+                    ->update(['billed' => 1]);
+        $amount = $request->amount;
+        Grant::where('grant_id', $bill->grant_id)
+                    ->increment('fund', $amount);
+    
+        $bill->save();
+        return redirect()->route('admin.bill', ['id' => $id])->with('success', 'Credit issued successfully.');
     }
     public function PiShowProfile($id){
         $user = User::where('user_id', $id)->first();

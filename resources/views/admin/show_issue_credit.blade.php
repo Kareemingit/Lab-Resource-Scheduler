@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Researcher Profile</title>
+    <title>admin - dashboard</title>
     <style>
         :root {
         --bg: #f4f5f7;
@@ -156,7 +156,7 @@
         .equip-row .k { color:var(--text3); }
         .equip-row .v { color:var(--text2); font-weight:500; }
         .equip-foot { padding:10px 16px; border-top:1px solid var(--border); display:flex; gap:6px; background:var(--bg); flex-wrap:wrap; }
-        .overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,.4); z-index:200; align-items:center; justify-content:center; }
+        .overlay { display:flex; position:fixed; inset:0; background:rgba(0,0,0,.4); z-index:200; align-items:center; justify-content:center; }
         .overlay.open { display:flex; }
         .modal { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-lg); padding:26px; width:480px; max-width:92vw; max-height:90vh; overflow-y:auto; box-shadow:0 20px 60px rgba(0,0,0,.18); animation:modal-pop .16s ease; }
         @keyframes modal-pop { from { opacity:0; transform:translateY(-10px) scale(.98); } to { opacity:1; transform:none; } }
@@ -194,7 +194,21 @@
         .form-row { grid-template-columns:1fr; }
         .main { padding:16px; }
         }
+        .overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(2px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
 
+        /* Show overlay when its ID is in the URL (e.g., #reserve-1) */
+        .overlay:target {
+            display: flex;
+        }
     </style>
 </head>
 <body>
@@ -220,47 +234,21 @@
             </div>
         </div>
     </div>
-    <div class="main" style="max-width:100%">
-        <div class="page-header">
-            <h1>Profile</h1>
-            <p>Manage your account details</p>
-        </div>
-
-        <!-- Profile Hero -->
-        <div class="profile-hero">
-            <div class="profile-av"> {{ substr($admin->name, 0, 1) }}</div>
-            <div style="flex:1">
-                <div class="profile-name">{{ $admin->name }}</div>
-                <div class="profile-meta">{{ ucfirst($admin->role) }}</div>
+    <div class="page active" id="page-users">
+        <div class="main">
+            <div class="page-header">
+                <h1>User Management</h1>
             </div>
-        </div>
-
-        <!-- Personal Information Card -->
+    <div class="table-wrap">
         <div class="card">
-            <div class="card-title">Personal Information</div>
-            <form action="{{ route('admin.update_profile', ['id' => $admin->user_id]) }}" method="POST">
+            <h3>Issue Credits</h3>
+            <form action="{{ route('admin.issue_credit', [$id, $bill_id]) }}" method="POST">
                 @csrf
-                @method('PUT')
                 <div class="form-group">
-                    <label>Full Name</label>
-                    <input name="name" value="{{ $admin->name }}">
+                    <label>Amount ($)</label>
+                    <input type="number" name="amount">
                 </div>
-                <div class="form-group">
-                    <label>Username</label>
-                    <input name="username" value="{{ $admin->username }}">
-                </div>
-                <button type="submit" class="btn btn-accent btn-sm">Save Changes</button>
-            </form>
-        </div>
-
-        <div class="card">
-            <form action="{{ route('user.logout') }}" method="POST" style="margin:0;">
-                @csrf
-                <button type="submit" class="btn-logout" style="background:none; border:1px solid #ff4d4d; color:#ff4d4d; padding:4px 8px; border-radius:4px; cursor:pointer; font-size:12px;">
-                    Logout
-                </button>
+            <button type="submit" class="btn btn-accent">Issue</button>
             </form>
         </div>
     </div>
-</body>
-</html>
