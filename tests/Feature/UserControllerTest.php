@@ -9,12 +9,14 @@ use App\Models\Equipment;
 use App\Models\Certification;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
-
+use PHPUnit\Framework\Attributes\Test;
 
 class UserControllerTest extends TestCase{
     use RefreshDatabase;
+    #[Test]
     public function it_can_create_a_researcher_user_successfully()
     {
+        $this->withoutMiddleware();
         $adminId = 1;
         $userData = [
             'username' => 'johndoe',
