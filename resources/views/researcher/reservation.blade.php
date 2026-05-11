@@ -245,7 +245,7 @@
       <th scope="col">Start Date</th>
       <th scope="col">End Date</th>
       <th scope="col">Reservation Hours</th>
-      <th scope="col">status</th>
+      <th scope="col">authorized</th>
     </tr>
   </thead>
   <tbody>
@@ -257,7 +257,7 @@
         <td>{{ $reservation->start_date }}</td>
         <td>{{ $reservation->end_date }}</td>
         <td>{{ $reservation->res_hours }}</td>
-        <td>{{ $reservation->status }}</td>
+        <td>{{ $reservation->authorized }}</td>
         <td><a class="btn btn-accent btn-sm" href="{{ route('confirm.receipt', ['id' => $researcher->user_id, 'eq_id' => $reservation->eq_id]) }}">Start Session</a></td>
         
     </tr>

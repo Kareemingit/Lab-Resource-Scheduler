@@ -103,11 +103,13 @@ class ReservationController extends Controller
         $endDateTime = (clone $startDateTime)->addHours($duration);
         $equipment = Equipment::findOrFail($validatedData['equipment_id']);
         if (!$this->checkAvailability($validatedData['equipment_id'], $startDateTime, $endDateTime)) {
-            return redirect()->back()->with('error', 'The equipment is not available for the selected period.');
+            //return redirect()->back()->with('error', 'The equipment is not available for the selected period.');
+            return view('error' , ['message' => 'The equipment is not available for the selected period.']);
         }
 
         if (!$this->checkUserHasPermission($validatedData['user_id'], $validatedData['equipment_id'])) {
-            return redirect()->back()->with('error', 'You are not certified to use this equipment.');
+            //return redirect()->back()->with('error', 'You are not certified to use this equipment.');
+            return view('error' , ['message' => 'You are not certified to use this equipment.']);
         }
 
         $primary_amount = $this->calculateCost($validatedData['equipment_id'], $duration);
@@ -115,16 +117,19 @@ class ReservationController extends Controller
 
         if (!is_null($equipment->sec_eq_id)) {
             if (!$this->checkAvailability($equipment->sec_eq_id, $startDateTime, $endDateTime)) {
-                return redirect()->back()->with('error', 'The secondary equipment is not available for the selected period.');
+                //return redirect()->back()->with('error', 'The secondary equipment is not available for the selected period.');
+                return view('error' , ['message' => 'The secondary equipment is not available for the selected period.']);
             }
             if (!$this->checkUserHasPermission($validatedData['user_id'], $equipment->sec_eq_id)) {
-                return redirect()->back()->with('error', 'You are not certified to use the secondary equipment.');
+                //return redirect()->back()->with('error', 'You are not certified to use the secondary equipment.');
+                return view('error' , ['message' => 'You are not certified to use the secondary equipment.']); 
             }
             $sec_amount = $this->calculateCost($equipment->sec_eq_id, $duration);
             $total_amount = $primary_amount + $sec_amount;
 
             if($this->isGrantBudgetExceeded($validatedData['grant_id'], $total_amount)){
-                return redirect()->back()->with('error', 'The grant budget is exceeded. Cannot create reservation for the secondary equipment.');
+                //return redirect()->back()->with('error', 'The grant budget is exceeded. Cannot create reservation for the secondary equipment.');
+                return view('error' , ['message' => 'The grant budget is exceeded. Cannot create reservation for the secondary equipment.']); 
             }
             try {
                 $this->moneyTransfer($validatedData['grant_id'], $validatedData['user_id'], $total_amount);
@@ -158,7 +163,9 @@ class ReservationController extends Controller
         }
         else{
             if($this->isGrantBudgetExceeded($validatedData['grant_id'], $primary_amount)){
-                return redirect()->back()->with('error', 'The grant budget is exceeded. Cannot create reservation.');
+                //return redirect()->back()->with('error', 'The grant budget is exceeded. Cannot create reservation.');
+                return view('error' , ['message' => 'The grant budget is exceeded. Cannot create reservation.']); 
+
             }
             try {
                 $this->moneyTransfer($validatedData['grant_id'], $validatedData['user_id'], $primary_amount);
