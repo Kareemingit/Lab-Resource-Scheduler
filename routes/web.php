@@ -6,7 +6,6 @@ use App\Http\Controllers\ReservationController;
 use App\Http\Controllers\EquipmentsController;
 use App\Http\Controllers\GrantController;
 
-//user module
 Route::get('/', function () {return view('login');})->name('login.view');
 Route::get('/register', function () {return view('register');})->name('register.view');
 Route::post('/register' , [UserController::class, 'RegisterUser'])->name('user.create');
