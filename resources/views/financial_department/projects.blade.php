@@ -245,18 +245,13 @@
                 <div class="table-wrap">
                     <table>
                         <thead>
-                            <tr><th>Project</th><th>PI</th><th>Grant ID</th><th>Budget</th><th></th></tr>
+                            <tr><th>Project</th><th>PI</th><th>Budget</th><th></th></tr>
                         </thead>
                         <tbody>
                             @foreach($projects ?? [] as $p)
                             <tr>
                                 <td class="bold">{{ $p->name }}</td>
                                 <td>{{ $p->supervisor->name ?? 'N/A' }}</td>
-                                <td>
-                                    <!-- @foreach($p->grants ?? [] as $g)
-                                        <span class="badge bb">{{ $g->grant_id }}</span>
-                                    @endforeach -->
-                                </td>
                                 <td>${{ number_format($p->balance, 2) }}</td>
                                 <td>
                                     <a href="#edit-proj-{{ $p->project_id }}" class="btn btn-xs btn-ghost">Edit</a>
