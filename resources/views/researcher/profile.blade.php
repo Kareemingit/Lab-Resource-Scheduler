@@ -238,7 +238,7 @@
         <!-- Personal Information Card -->
         <div class="card">
             <div class="card-title">Personal Information</div>
-            <form action="" method="POST">
+            <form action="{{ route('researcher.update_profile', ['id' => $user->user_id]) }}" method="POST">
                 @csrf
                 @method('PUT')
                 <div class="form-group">

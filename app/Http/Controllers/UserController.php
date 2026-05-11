@@ -262,7 +262,7 @@ class UserController extends Controller
         return view('lab_manager.profile', ['user' => $user]);
     }
 
-    public function UpdateLabManagerProfile(Request $request, $id){
+    public function UpdateProfile(Request $request, $id){
         $user = User::findOrFail($id);
         
         $validated = $request->validate([
@@ -275,9 +275,29 @@ class UserController extends Controller
             'username' => $validated['username']
         ]);
 
+        if($user->role == 'researcher'){
+            return redirect()->route('researcher.profile', ['id' => $id])
+            ->with('success', 'Profile updated successfully.');
+        } 
+        else if($user->role == 'lab_manager'){
         return redirect()->route('lab_manager.profile', ['id' => $id])
             ->with('success', 'Profile updated successfully.');
+        }
+        else if($user->role == 'admin'){
+        return redirect()->route('admin.profile', ['id' => $id])
+            ->with('success', 'Profile updated successfully.');
+        }
+        else if($user->role == 'supervisor'){
+        return redirect()->route('supervisor.profile', ['id' => $id])
+            ->with('success', 'Profile updated successfully.');
+        }
+        else if($user->role == 'pi'){
+        return redirect()->route('pi.profile', ['id' => $id])
+            ->with('success', 'Profile updated successfully.');
+        }
+    
     }
+    
 
     public function UpdateLabManagerPassword(Request $request, $id){
         $user = User::findOrFail($id);

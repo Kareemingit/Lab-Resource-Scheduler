@@ -237,7 +237,7 @@
         <!-- Personal Information Card -->
         <div class="card">
             <div class="card-title">Personal Information</div>
-            <form action="" method="POST">
+            <form action="{{ route('admin.update_profile', ['id' => $admin->user_id]) }}" method="POST">
                 @csrf
                 @method('PUT')
                 <div class="form-group">
