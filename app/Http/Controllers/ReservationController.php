@@ -140,8 +140,8 @@ class ReservationController extends Controller
                 'start_date'    => $startDateTime,
                 'end_date'      => $endDateTime,
                 'grant_id'      => $validatedData['grant_id'],
-                'res_hours'    => $duration,
-                'status'        => 'pending',
+                'res_hours'     => $duration,
+                'authorized'    => 0,
                 'confirm_receipt' => 0,
             ]);
 
@@ -152,7 +152,7 @@ class ReservationController extends Controller
                 'end_date'      => $endDateTime,
                 'grant_id'      => $validatedData['grant_id'],
                 'res_hours'    => $duration,
-                'status'        => 'pending',
+                'authorized'        => 0,
                 'confirm_receipt' => 0,
             ]);
         }
@@ -172,7 +172,7 @@ class ReservationController extends Controller
                 'end_date'      => $endDateTime,
                 'grant_id'      => $validatedData['grant_id'],
                 'res_hours'    => $duration,
-                'status'        => 'pending',
+                'authorized'        => 0,
                 'confirm_receipt' => 0,
             ]);
         }

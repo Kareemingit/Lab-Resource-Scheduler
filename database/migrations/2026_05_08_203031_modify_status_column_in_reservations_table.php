@@ -10,14 +10,12 @@ return new class extends Migration
     {
         Schema::table('reservations', function (Blueprint $table) {
 
-            // remove old status column
             $table->dropColumn('status');
 
         });
 
         Schema::table('reservations', function (Blueprint $table) {
 
-            // add new authorized boolean column
             $table->boolean('authorized')->default(0);
 
         });
