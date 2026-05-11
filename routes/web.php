@@ -12,7 +12,7 @@ Route::get('/register', function () {return view('register');})->name('register.
 Route::post('/register' , [UserController::class, 'RegisterUser'])->name('user.create');
 Route::post('/login', [UserController::class, 'LoginUser'])->name('user.login');
 Route::post('/logout' , [UserController::class , 'LogoutUser'])->name('user.logout');
-//researcher
+
 Route::post('/researcher/add-certification', [UserController::class, 'AddCertification'])->name('researcher.add_certification');
 Route::middleware(['user_access'])->group(function () {
     //researcher
@@ -41,27 +41,25 @@ Route::middleware(['user_access'])->group(function () {
     Route::post('/admin/user-create/{id}' , [UserController::class , 'CreateUser'])->name('admin.user.create');
     Route::put('/admin/user-update/{id}' , [UserController::class , 'UpdateUser'])->name('admin.user.update');
     Route::delete('/admin/user-destroy/{id}/{user_id}' , [UserController::class , 'DestroyUser'])->name('admin.user.delete');
-    });
-    Route::post('/lab_manager/equipment/{id}/store', [EquipmentsController::class, 'store'])->name('equipment.store');
-    Route::put('/lab_manager/equipment/{id}/update', [EquipmentsController::class, 'update'])->name('equipment.update');
-    Route::delete('/lab_manager/equipment/{id}/delete', [EquipmentsController::class, 'destroy'])->name('equipment.destroy');
-    Route::post('/lab_manager/equipment/{eq_id}/report-accident', [EquipmentsController::class, 'reportAccident'])->name('equipment.report');
-    
-    //resource control module
-    //reservation
-    Route::post('/reservations/store', [ReservationController::class, 'store'])->name('reservations.store');
-    //grant
-    Route::post('/grant/store' , [GrantController::class , 'store'])->name('grant.store');
-    
+
+    //pi
     Route::get('/pi/profile/{id}' , [UserController::class , 'PiShowProfile'])->name('pi.profile');
     Route::put('/pi/profile/{id}', [UserController::class, 'UpdateProfile'])->name('pi.update_profile');
     Route::get('/pi/home/{id}' , [UserController::class , 'PiShowHome'])->name('pi.home');
     Route::get('/pi/reservation/{id}' , [UserController::class , 'PiShowReservation'])->name('pi.reservation');
     Route::get('/pi/reservation/{id}/{eq_id}',[ReservationController::class, 'authorize'])->name('pi.authorize');
-    
+
     //supervisor
     Route::get('/supervisor/home/{id}', [UserController::class, 'SuperShowHome'])->name('supervisor.home');
     Route::get('/supervisor/profile/{id}' , [UserController::class , 'SuperShowProfile'])->name('supervisor.profile');
     Route::put('/supervisor/profile/{id}', [UserController::class, 'UpdateProfile'])->name('supervisor.update_profile');
     Route::get('/supervisor/reservation/{id}' , [UserController::class , 'SuperShowReservation'])->name('supervisor.reservation');
     Route::get('/supervisor/reservation/{id}/{eq_id}',[ReservationController::class, 'assign'])->name('supervisor.assign');
+});
+Route::post('/lab_manager/equipment/{id}/store', [EquipmentsController::class, 'store'])->name('equipment.store');
+Route::put('/lab_manager/equipment/{id}/update', [EquipmentsController::class, 'update'])->name('equipment.update');
+Route::delete('/lab_manager/equipment/{id}/delete', [EquipmentsController::class, 'destroy'])->name('equipment.destroy');
+Route::post('/lab_manager/equipment/{eq_id}/report-accident', [EquipmentsController::class, 'reportAccident'])->name('equipment.report');
+
+Route::post('/reservations/store', [ReservationController::class, 'store'])->name('reservations.store');
+Route::post('/grant/store' , [GrantController::class , 'store'])->name('grant.store');

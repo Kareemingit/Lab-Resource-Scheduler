@@ -214,7 +214,7 @@
         </div>
 
         <div class="topbar-right">
-            <div class="role-pill r-researcher">PI</div>
+            <div class="role-pill r-researcher">SUPERVISOR</div>
             <div class="avatar">
                 US
             </div>
